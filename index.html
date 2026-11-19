@@ -3,32 +3,31 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Haunted Hollow</title>
-
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>HAUNTED HOLLOW</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#100d1b;color:#eee8ff;font-family:monospace;overflow-x:hidden;text-align:center;touch-action:pan-y}
+body{background:#100d1b;color:#eee8ff;font-family:monospace;text-align:center;overflow-x:hidden}
 header{padding:16px 8px 10px}
-h1{color:#c7a5ff;font-size:clamp(23px,5vw,38px);letter-spacing:4px;text-shadow:3px 3px #593b7c}
-.subtitle{color:#a99abf;font-size:12px;margin-top:7px}
+h1{font-size:clamp(24px,5vw,38px);letter-spacing:4px;color:#c7a5ff;text-shadow:3px 3px #593b7c}
+#world-name{font-size:12px;color:#b7a4d0;margin-top:8px}
 #game-wrap{width:min(960px,100%);margin:12px auto;padding:0 8px}
-#game{width:100%;display:block;aspect-ratio:16/9;background:#171329;border:4px solid #60477f;border-radius:5px;image-rendering:pixelated;touch-action:none}
-#instructions{color:#b6a8ca;font-size:12px;line-height:1.8;margin:10px auto;padding:0 12px}
-#controls{display:flex;justify-content:space-between;align-items:center;width:min(520px,100%);margin:14px auto 20px;padding:0 12px;touch-action:none}
+canvas{display:block;width:100%;aspect-ratio:16/9;background:#171329;border:4px solid #60477f;border-radius:5px;image-rendering:pixelated;touch-action:none}
+#instructions{font-size:12px;line-height:1.8;color:#b6a8ca;padding:8px}
+#controls{display:flex;justify-content:space-between;align-items:center;width:min(520px,100%);margin:14px auto 18px;padding:0 12px}
 .control-group{display:flex;gap:12px}
-.control{width:66px;height:62px;border:2px solid #9272b8;border-radius:12px;background:#302344;color:white;font-size:26px;font-family:monospace;box-shadow:0 4px #171020;touch-action:none;user-select:none}
-.control:active,.control.pressed{background:#76549b;transform:translateY(3px);box-shadow:0 1px #171020}
+.control{width:66px;height:62px;border:2px solid #9272b8;border-radius:12px;background:#302344;color:white;font-size:25px;font-family:monospace;touch-action:none;user-select:none}
+.control.pressed{background:#76549b;transform:translateY(3px)}
 .jump{width:90px;background:#553d76;font-size:14px;font-weight:bold}
-#restart{background:#51376d;color:white;border:1px solid #b99cdb;border-radius:6px;padding:10px 20px;font-family:monospace;margin-bottom:20px;cursor:pointer}
-footer{font-size:10px;color:#756887;padding:8px}
+.extra{background:#38274f;color:#eee;border:1px solid #9272b8;border-radius:6px;padding:10px 15px;font-family:monospace;margin:0 4px 18px}
+footer{font-size:10px;color:#756887;padding:10px}
 </style>
 </head>
-
 <body>
+
 <header>
 <h1>HAUNTED HOLLOW</h1>
-<div class="subtitle" id="world-name">WORLD 1: THE FORGOTTEN WOODS</div>
+<div id="world-name">WORLD 1: THE FORGOTTEN WOODS</div>
 </header>
 
 <div id="game-wrap">
@@ -37,7 +36,7 @@ footer{font-size:10px;color:#756887;padding:8px}
 
 <div id="instructions">
 KEYBOARD: A / D or ← / → to move · SPACE / W / ↑ to jump<br>
-MOBILE: Use the buttons below · Collect souls · Avoid ghosts
+MOBILE: Use the buttons · Collect souls · Defeat the Guardian
 </div>
 
 <div id="controls">
@@ -48,23 +47,30 @@ MOBILE: Use the buttons below · Collect souls · Avoid ghosts
 <button class="control jump" id="jump">JUMP</button>
 </div>
 
-<button id="restart">↻ RESTART GAME</button>
+<button class="extra" id="journal">📖 JOURNAL</button>
+<button class="extra" id="restart">↻ RESTART</button>
+
 <footer>HAUNTED HOLLOW · A PIXEL ADVENTURE</footer>
 
 <script>
+"use strict";
+
 const canvas=document.getElementById("game");
 const ctx=canvas.getContext("2d");
-const W=960,H=540;
 
+if(!ctx) throw new Error("Canvas is not supported by this browser.");
+
+const W=960,H=540;
 const keys={left:false,right:false,jump:false};
 
-const secretMessages=[
+const messages=[
 "Ham apne bacche kaise palenge",
 "Mera kutta tumhe kha jayega",
 "Periods pain hei toh paani peelo",
 "Ek jhaapad marungi na",
 "12th khatam hone se pehle Mera dehant na ho jaye",
-"Are yawr aap na so jao","Ro mat","Ouuu shiiii",
+"Are yawr aap na so jao",
+"Ro mat","Ouuu shiiii",
 "Apka naya bf banega jab toh usse mangna","Loru",
 "The forest remembers every visitor.",
 "You weren't supposed to find this place.",
@@ -78,73 +84,69 @@ const secretMessages=[
 "Achievement unlocked: Professional Ghost Annoyer.",
 "A soul collected. Your taxes remain unpaid.",
 "Even the dead have better Wi-Fi here.",
-"Rumour says there's a secret door somewhere.",
-"You are doing suspiciously well.",
 "The forest says hello. It is not friendly.",
 "Somebody left a light on in the castle.",
-"I wonder what happens if you collect everything.",
-"This message will self-destruct. Just kidding.",
-"You have 99 problems and a ghost is one.",
-"The little explorer has main character energy.",
 "Not all lost souls want to be found.",
-"A strange feeling tells you to keep going.",
 "The next ghost owes you an apology.",
-"You found a soul. It found a new home.",
 "The trees are gossiping about you.",
 "If you hear a laugh, no you didn't.",
-"This forest has terrible hospitality.",
-"A ghost just filed a complaint against you.",
 "The darkness is oddly impressed.",
-"Your bravery has been noted. Probably.",
 "Someone is watching from the castle window.",
 "The mushrooms know more than they tell.",
 "Don't forget to look up.",
-"Somewhere, a tiny ghost is cheering for you.",
-"You are officially on the forest's guest list.",
-"A little mystery never hurt anyone.",
 "The moon has a favourite player. Guess who?",
-"Keep going. There's something waiting ahead.",
-"The forest is not as empty as it looks.",
-"The door was never meant to be opened.",
 "Something beneath you is awake.",
-"Five souls. One secret. No explanations."
+"The door was never meant to be opened.",
+"You are not the first visitor.",
+"The Guardian has been waiting."
 ];
 
 let activeMessage="";
 let messageTimer=0;
-let lastMessageIndex=-1;
-
-function revealMessage(){
- let index;
- do{index=Math.floor(Math.random()*secretMessages.length)}
- while(index===lastMessageIndex&&secretMessages.length>1);
- lastMessageIndex=index;
- activeMessage=secretMessages[index];
- messageTimer=210;
-}
-
-let player,camera,lives,score,collected,enemies,gameState;
-let invincible,checkpoint,jumpBuffer,previousBottom,frame=0;
+let lastMessage=-1;
+let frame=0;
 let area="forest";
-let forestReturnX=4000;
+let gameState="playing";
+let journalOpen=false;
+
+let player;
+let camera=0;
+let score=0;
+let lives=3;
+let invincible=0;
+let checkpoint=60;
+let collected=[];
 let secretCollected=[];
-let secretMessageShown=false;
+let castleCollected=[];
+let boss;
+let bossDefeated=false;
+let forestReturn=4000;
+let journalEntries=[];
 
-const worldWidth=4300;
+const forestWidth=4300;
 
-const platforms=[
-{x:0,y:450,w:650,h:100},{x:730,y:450,w:570,h:100},
-{x:1380,y:450,w:660,h:100},{x:2130,y:450,w:670,h:100},
-{x:2890,y:450,w:700,h:100},{x:3690,y:450,w:610,h:100},
-{x:210,y:370,w:130,h:18},{x:420,y:310,w:150,h:18},
-{x:850,y:360,w:130,h:18},{x:1070,y:300,w:130,h:18},
-{x:1500,y:360,w:140,h:18},{x:1740,y:300,w:150,h:18},
-{x:2210,y:360,w:140,h:18},{x:2460,y:300,w:150,h:18},
-{x:3000,y:360,w:150,h:18},{x:3250,y:300,w:140,h:18},
-{x:3800,y:360,w:150,h:18},{x:4020,y:300,w:140,h:18}
+const forestPlatforms=[
+{x:0,y:450,w:650,h:100},
+{x:730,y:450,w:570,h:100},
+{x:1380,y:450,w:660,h:100},
+{x:2130,y:450,w:670,h:100},
+{x:2890,y:450,w:700,h:100},
+{x:3690,y:450,w:610,h:100},
+{x:210,y:370,w:130,h:18},
+{x:420,y:310,w:150,h:18},
+{x:850,y:360,w:130,h:18},
+{x:1070,y:300,w:130,h:18},
+{x:1500,y:360,w:140,h:18},
+{x:1740,y:300,w:150,h:18},
+{x:2210,y:360,w:140,h:18},
+{x:2460,y:300,w:150,h:18},
+{x:3000,y:360,w:150,h:18},
+{x:3250,y:300,w:140,h:18},
+{x:3800,y:360,w:150,h:18},
+{x:4020,y:300,w:140,h:18}
 ];
 
-const coinPositions=[
+const forestSouls=[
 [250,330],[290,330],[450,270],[500,270],
 [900,320],[940,320],[1100,260],[1150,260],
 [1540,320],[1580,320],[1780,260],[1830,260],
@@ -154,8 +156,7 @@ const coinPositions=[
 [680,410],[1320,410],[2060,410],[2850,410],[3650,410]
 ];
 
-// SECRET ROOM MAP
-const secretPlatforms=[
+const cavePlatforms=[
 {x:0,y:450,w:960,h:100},
 {x:180,y:370,w:130,h:18},
 {x:390,y:300,w:140,h:18},
@@ -163,67 +164,124 @@ const secretPlatforms=[
 {x:800,y:290,w:120,h:18}
 ];
 
-const secretCoins=[
+const caveSouls=[
 [220,330],[430,260],[665,320],[845,250],[500,410]
 ];
 
-function makePlayer(){
- return{x:60,y:390,w:28,h:42,vx:0,vy:0,grounded:false,facing:1};
-}
+const castlePlatforms=[
+{x:0,y:450,w:600,h:100},
+{x:680,y:450,w:620,h:100},
+{x:1380,y:450,w:620,h:100},
+{x:170,y:360,w:130,h:18},
+{x:390,y:300,w:140,h:18},
+{x:820,y:360,w:140,h:18},
+{x:1080,y:300,w:140,h:18},
+{x:1510,y:360,w:150,h:18},
+{x:1750,y:300,w:140,h:18}
+];
 
-function makeEnemies(){
- return[
- {x:500,y:410,start:470,end:610,speed:1.3,alive:true},
- {x:900,y:410,start:780,end:1150,speed:1.5,alive:true},
- {x:1590,y:410,start:1450,end:1950,speed:1.7,alive:true},
- {x:2350,y:410,start:2180,end:2700,speed:1.8,alive:true},
- {x:3150,y:410,start:2950,end:3500,speed:2,alive:true},
- {x:3890,y:410,start:3730,end:4200,speed:2.1,alive:true}
- ];
+const castleSouls=[
+[220,320],[430,260],[860,320],[1120,260],
+[1550,320],[1790,260],[620,410],[1330,410]
+];
+
+const forestEnemies=[
+{x:500,y:410,start:470,end:610,speed:1.3,alive:true},
+{x:900,y:410,start:780,end:1150,speed:1.5,alive:true},
+{x:1590,y:410,start:1450,end:1950,speed:1.7,alive:true},
+{x:2350,y:410,start:2180,end:2700,speed:1.8,alive:true},
+{x:3150,y:410,start:2950,end:3500,speed:2,alive:true},
+{x:3890,y:410,start:3730,end:4200,speed:2.1,alive:true}
+];
+
+let enemies=[];
+
+function makePlayer(x=60){
+ return{
+  x,y:390,w:28,h:42,
+  vx:0,vy:0,grounded:false,
+  facing:1,jumpHeld:false
+ };
 }
 
 function resetGame(){
  player=makePlayer();
  camera=0;
- lives=3;
  score=0;
- collected=[];
- enemies=makeEnemies();
- gameState="playing";
+ lives=3;
  invincible=0;
  checkpoint=60;
- jumpBuffer=0;
- area="forest";
- forestReturnX=4000;
+ collected=[];
  secretCollected=[];
+ castleCollected=[];
+ enemies=forestEnemies.map(e=>({...e}));
+ bossDefeated=false;
+ boss={
+  x:700,y:380,w:76,h:70,
+  hp:6,maxHp:6,
+  speed:1.2,
+  alive:true,
+  hitFlash:0
+ };
+ area="forest";
+ gameState="playing";
+ journalOpen=false;
+ journalEntries=["You entered the Forgotten Woods."];
  activeMessage="";
  messageTimer=0;
- lastMessageIndex=-1;
+ lastMessage=-1;
+ frame=0;
+ forestReturn=4000;
  document.getElementById("world-name").textContent="WORLD 1: THE FORGOTTEN WOODS";
 }
 
-function hurtPlayer(){
- if(invincible>0||gameState!=="playing")return;
- lives--;
- if(lives<=0){gameState="gameover";return}
- player.x=area==="forest"?checkpoint:400;
- player.y=360;
- player.vx=0;
- player.vy=0;
- invincible=110;
+function say(text){
+ activeMessage=text;
+ messageTimer=220;
+}
+
+function randomMessage(){
+ let i;
+ do{i=Math.floor(Math.random()*messages.length)}
+ while(i===lastMessage);
+ lastMessage=i;
+ say(messages[i]);
+}
+
+function addEntry(text){
+ if(!journalEntries.includes(text))journalEntries.push(text);
 }
 
 function overlap(a,b){
- return a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y;
+ return a.x<b.x+b.w&&a.x+a.w>b.x&&
+        a.y<b.y+b.h&&a.y+a.h>b.y;
 }
 
-// BACKGROUND
+function hurt(){
+ if(invincible>0||gameState!=="playing")return;
+ lives--;
+ if(lives<=0){
+  gameState="gameover";
+  return;
+ }
+ player.x=area==="forest"?checkpoint:area==="cave"?130:100;
+ player.y=360;
+ player.vx=0;
+ player.vy=0;
+ invincible=100;
+ say("The Hollow is not finished with you.");
+}
+
+function drawRect(x,y,w,h,color){
+ ctx.fillStyle=color;
+ ctx.fillRect(Math.floor(x),Math.floor(y),w,h);
+}
 
 function drawBackground(){
- const sky=ctx.createLinearGradient(0,0,0,H);
- sky.addColorStop(0,"#17142e");
- sky.addColorStop(1,"#37304a");
- ctx.fillStyle=sky;
+ const g=ctx.createLinearGradient(0,0,0,H);
+ g.addColorStop(0,"#17142e");
+ g.addColorStop(1,"#37304a");
+ ctx.fillStyle=g;
  ctx.fillRect(0,0,W,H);
 
  ctx.fillStyle="#d9d1f0";
@@ -234,114 +292,140 @@ function drawBackground(){
  for(let i=0;i<55;i++){
   let x=(i*173-camera*.15)%W;
   if(x<0)x+=W;
-  let y=(i*67)%220;
   ctx.fillStyle=i%3===0?"#d9c9ff":"#827ba5";
-  ctx.fillRect(x,y,3,3);
+  ctx.fillRect(x,(i*67)%220,3,3);
  }
 
  ctx.fillStyle="#27243c";
  for(let i=0;i<8;i++){
-  let x=i*180-(camera*.25)%180;
+  const x=i*180-(camera*.25)%180;
   ctx.beginPath();ctx.arc(x,410,120,Math.PI,0);ctx.fill();
  }
+
  for(let i=0;i<16;i++){
-  let x=i*150-(camera*.45)%150;
+  const x=i*150-(camera*.45)%150;
   drawTree(x,415,.8+(i%3)*.15);
+ }
+
+ // Fireflies
+ for(let i=0;i<20;i++){
+  const x=(i*97+frame*.45)%W;
+  const y=240+(i*43)%170+Math.sin(frame*.04+i)*8;
+  ctx.fillStyle=i%2?"#b8e99a":"#d8b8ff";
+  ctx.globalAlpha=.45+Math.sin(frame*.06+i)*.3;
+  ctx.fillRect(x,y,3,3);
+ }
+ ctx.globalAlpha=1;
+
+ // Fog
+ ctx.fillStyle="rgba(160,150,190,.035)";
+ for(let i=0;i<5;i++){
+  ctx.fillRect((i*230+frame*.25)%W,420,160,20);
  }
 }
 
 function drawTree(x,y,s){
- ctx.save();ctx.translate(x,y);ctx.scale(s,s);
- ctx.fillStyle="#211b30";
- ctx.fillRect(-9,-105,18,110);
- ctx.fillRect(-9,-80,-38,9);
- ctx.fillRect(0,-65,42,9);
- ctx.fillRect(-35,-95,8,30);
- ctx.fillRect(30,-88,8,32);
- ctx.fillStyle="#362847";
- ctx.fillRect(-42,-108,18,18);
- ctx.fillRect(25,-112,20,20);
- ctx.fillRect(-10,-130,20,25);
+ ctx.save();
+ ctx.translate(x,y);
+ ctx.scale(s,s);
+ drawRect(-9,-105,18,110,"#211b30");
+ drawRect(-9,-80,-38,9,"#211b30");
+ drawRect(0,-65,42,9,"#211b30");
+ drawRect(-35,-95,8,30,"#211b30");
+ drawRect(30,-88,8,32,"#211b30");
+ drawRect(-42,-108,18,18,"#362847");
+ drawRect(25,-112,20,20,"#362847");
+ drawRect(-10,-130,20,25,"#362847");
  ctx.restore();
 }
 
-// SECRET ROOM BACKGROUND
-
-function drawSecretBackground(){
- const sky=ctx.createLinearGradient(0,0,0,H);
- sky.addColorStop(0,"#090713");
- sky.addColorStop(.65,"#21142e");
- sky.addColorStop(1,"#39203d");
- ctx.fillStyle=sky;
+function drawCaveBackground(){
+ const g=ctx.createLinearGradient(0,0,0,H);
+ g.addColorStop(0,"#090713");
+ g.addColorStop(1,"#39203d");
+ ctx.fillStyle=g;
  ctx.fillRect(0,0,W,H);
 
- // Underground ceiling
  ctx.fillStyle="#171020";
  ctx.fillRect(0,0,W,75);
 
  for(let i=0;i<20;i++){
-  const x=i*53;
   ctx.fillStyle="#30203d";
   ctx.beginPath();
-  ctx.moveTo(x,0);
-  ctx.lineTo(x+15,65+(i%3)*15);
-  ctx.lineTo(x+30,0);
+  ctx.moveTo(i*53,0);
+  ctx.lineTo(i*53+15,65+(i%3)*15);
+  ctx.lineTo(i*53+30,0);
   ctx.fill();
  }
 
- // Strange glowing crystals
  for(let i=0;i<9;i++){
   const x=80+i*110;
   const y=120+(i%3)*70;
-  ctx.fillStyle="#56377d";
-  ctx.fillRect(x,y,12,35);
-  ctx.fillStyle="#c28aff";
-  ctx.fillRect(x+4,y+8,5,20);
+  drawRect(x,y,12,35,"#56377d");
+  drawRect(x+4,y+8,5,20,"#c28aff");
   ctx.fillStyle="rgba(181,105,255,.12)";
   ctx.beginPath();ctx.arc(x+6,y+15,35,0,Math.PI*2);ctx.fill();
  }
 
- // Distant arches
- for(let i=0;i<6;i++){
-  const x=i*190+30;
-  ctx.strokeStyle="#35233f";
-  ctx.lineWidth=12;
-  ctx.beginPath();ctx.arc(x,450,75,Math.PI,0);ctx.stroke();
- }
-
- ctx.fillStyle="#8c5caa";
+ ctx.fillStyle="#a77cc5";
  ctx.font="14px monospace";
  ctx.textAlign="center";
  ctx.fillText("THE HOLLOW BELOW",480,105);
  ctx.textAlign="left";
 }
 
-// PLATFORMS
+function drawCastleBackground(){
+ const g=ctx.createLinearGradient(0,0,0,H);
+ g.addColorStop(0,"#17101f");
+ g.addColorStop(1,"#47304b");
+ ctx.fillStyle=g;
+ ctx.fillRect(0,0,W,H);
+
+ // Castle towers
+ for(let i=0;i<6;i++){
+  const x=i*190+20;
+  drawRect(x,120,100,330,"#292035");
+  drawRect(x+20,80,60,40,"#382744");
+  ctx.fillStyle="#171020";
+  ctx.beginPath();
+  ctx.moveTo(x+10,80);
+  ctx.lineTo(x+50,25);
+  ctx.lineTo(x+90,80);
+  ctx.fill();
+  drawRect(x+40,170,20,40,"#a48ac4");
+ }
+
+ ctx.fillStyle="#e2d3f3";
+ ctx.font="14px monospace";
+ ctx.textAlign="center";
+ ctx.fillText("WORLD 2: THE ABANDONED CASTLE",480,55);
+ ctx.textAlign="left";
+}
 
 function drawPlatforms(list,cam){
  for(const p of list){
   const x=Math.floor(p.x-cam);
   if(x+p.w<0||x>W)continue;
-
-  ctx.fillStyle="#352b40";
-  ctx.fillRect(x,p.y,p.w,p.h);
-  ctx.fillStyle="#58714c";
-  ctx.fillRect(x,p.y,p.w,9);
-  ctx.fillStyle="#8da66a";
-  for(let i=0;i<p.w;i+=26)ctx.fillRect(x+i,p.y-3,10,4);
-  ctx.fillStyle="#292035";
-  for(let i=10;i<p.w;i+=38)ctx.fillRect(x+i,p.y+22,15,5);
+  drawRect(x,p.y,p.w,p.h,"#352b40");
+  drawRect(x,p.y,p.w,9,"#58714c");
+  for(let i=0;i<p.w;i+=26)drawRect(x+i,p.y-3,10,4,"#8da66a");
+  for(let i=10;i<p.w;i+=38)drawRect(x+i,p.y+22,15,5,"#292035");
  }
 }
 
-function drawCoin(x,y){
+function drawSoul(x,y){
+ ctx.save();
+ ctx.translate(x,y);
+ ctx.fillStyle="rgba(120,220,255,.15)";
+ ctx.beginPath();ctx.arc(0,0,17+Math.sin(frame*.12)*3,0,Math.PI*2);ctx.fill();
  ctx.fillStyle="#a5f7ff";
- ctx.fillRect(x-5,y-10,10,20);
+ ctx.fillRect(-5,-10,10,20);
  ctx.fillStyle="#e4ffff";
- ctx.fillRect(x-2,y-7,4,14);
+ ctx.fillRect(-2,-7,4,14);
  ctx.fillStyle="#7a9aff";
- ctx.fillRect(x-8,y-4,3,8);
- ctx.fillRect(x+5,y-4,3,8);
+ ctx.fillRect(-8,-4,3,8);
+ ctx.fillRect(5,-4,3,8);
+ ctx.restore();
 }
 
 function drawPlayer(){
@@ -355,34 +439,23 @@ function drawPlayer(){
   ctx.scale(-1,1);
   ctx.translate(-x,-y);
  }
-
- ctx.fillStyle="#171323";
- ctx.fillRect(x+3,y+39,25,5);
- ctx.fillStyle="#35243d";
- ctx.fillRect(x+3,y+34,10,8);
- ctx.fillRect(x+17,y+34,10,8);
- ctx.fillStyle="#5c466e";
- ctx.fillRect(x+5,y+16,19,20);
- ctx.fillStyle="#a18ac1";
- ctx.fillRect(x+8,y+18,13,17);
- ctx.fillStyle="#b94e70";
- ctx.fillRect(x+5,y+17,21,5);
- ctx.fillRect(x+19,y+20,5,9);
- ctx.fillStyle="#f0c6a8";
- ctx.fillRect(x+5,y+3,20,17);
- ctx.fillStyle="#32253d";
- ctx.fillRect(x+3,y,22,8);
- ctx.fillRect(x+3,y+5,5,9);
- ctx.fillStyle="#211a30";
- ctx.fillRect(x+19,y+10,3,3);
+ drawRect(x+3,y+39,25,5,"#171323");
+ drawRect(x+3,y+34,10,8,"#35243d");
+ drawRect(x+17,y+34,10,8,"#35243d");
+ drawRect(x+5,y+16,19,20,"#5c466e");
+ drawRect(x+8,y+18,13,17,"#a18ac1");
+ drawRect(x+5,y+17,21,5,"#b94e70");
+ drawRect(x+19,y+20,5,9,"#b94e70");
+ drawRect(x+5,y+3,20,17,"#f0c6a8");
+ drawRect(x+3,y,22,8,"#32253d");
+ drawRect(x+3,y+5,5,9,"#32253d");
+ drawRect(x+19,y+10,3,3,"#211a30");
  ctx.restore();
 }
 
 function drawGhost(e){
  if(!e.alive)return;
- const x=Math.floor(e.x-camera);
- const y=Math.floor(e.y);
-
+ const x=e.x-camera,y=e.y;
  ctx.fillStyle="#b5c8e9";
  ctx.fillRect(x+5,y+5,24,22);
  ctx.fillRect(x,y+12,34,13);
@@ -397,98 +470,99 @@ function drawGhost(e){
  ctx.fillRect(x+23,y+13,2,3);
 }
 
-// SECRET DOOR
-
-const secretDoor={x:4140,y:378,w:48,h:72};
-
-function drawSecretDoor(){
- const x=secretDoor.x-camera;
+function drawDoor(){
+ const x=4140-camera;
  const unlocked=score>=10;
+ const pulse=Math.sin(frame*.08)*4;
 
- // Glow
- ctx.fillStyle=unlocked?"rgba(177,91,255,.18)":"rgba(90,65,120,.12)";
- ctx.beginPath();
- ctx.arc(x+24,415,65,0,Math.PI*2);
- ctx.fill();
+ ctx.fillStyle=unlocked?"rgba(177,91,255,.2)":"rgba(90,65,120,.1)";
+ ctx.beginPath();ctx.arc(x+24,415,65+pulse,0,Math.PI*2);ctx.fill();
 
- // Door frame
- ctx.fillStyle="#171020";
- ctx.fillRect(x-6,secretDoor.y-6,60,78);
- ctx.fillStyle="#72518e";
- ctx.fillRect(x,secretDoor.y,48,72);
- ctx.fillStyle="#281b3b";
- ctx.fillRect(x+6,secretDoor.y+8,36,64);
+ drawRect(x-6,372,60,78,"#171020");
+ drawRect(x,378,48,72,"#72518e");
+ drawRect(x+6,386,36,64,"#281b3b");
 
- // Door details
  ctx.strokeStyle=unlocked?"#d7a4ff":"#77658b";
  ctx.lineWidth=3;
- ctx.strokeRect(x+10,secretDoor.y+12,28,56);
- ctx.fillStyle=unlocked?"#e7baff":"#8b7a9d";
- ctx.fillRect(x+34,secretDoor.y+39,5,5);
+ ctx.strokeRect(x+10,390,28,56);
+ drawRect(x+34,417,5,5,unlocked?"#e7baff":"#8b7a9d");
 
- if(unlocked){
-  ctx.fillStyle="#dba7ff";
-  ctx.fillRect(x+20,secretDoor.y+22,8,8);
-  ctx.fillStyle="rgba(186,112,255,.12)";
-  ctx.fillRect(x-10,secretDoor.y-10,68,92);
- }else{
-  ctx.fillStyle="#a99abf";
-  ctx.font="11px monospace";
-  ctx.textAlign="center";
-  ctx.fillText("LOCKED",x+24,secretDoor.y-13);
-  ctx.textAlign="left";
- }
+ ctx.textAlign="center";
+ ctx.font="11px monospace";
+ ctx.fillStyle=unlocked?"#e2baff":"#a99abf";
+ ctx.fillText(unlocked?"ENTER":"NEED 10 SOULS",x+24,360);
+ ctx.textAlign="left";
 }
 
-// RETURN PORTAL
+function drawPortal(x,y,color){
+ const pulse=Math.sin(frame*.08)*4;
+ ctx.fillStyle=color==="blue"?"rgba(112,204,255,.16)":"rgba(190,110,255,.16)";
+ ctx.beginPath();ctx.arc(x+22,y+40,42+pulse,0,Math.PI*2);ctx.fill();
 
-function drawReturnPortal(){
- const x=55;
- const pulse=Math.sin(frame*.08)*5;
- ctx.fillStyle="rgba(112,204,255,.14)";
- ctx.beginPath();ctx.arc(x+22,415,43+pulse,0,Math.PI*2);ctx.fill();
-
- ctx.strokeStyle="#9feaff";
+ ctx.strokeStyle=color==="blue"?"#9feaff":"#d8a5ff";
  ctx.lineWidth=5;
- ctx.beginPath();ctx.ellipse(x+22,414,18,35,0,0,Math.PI*2);ctx.stroke();
-
- ctx.strokeStyle="#d9faff";
+ ctx.beginPath();ctx.ellipse(x+22,y+40,18,35,0,0,Math.PI*2);ctx.stroke();
  ctx.lineWidth=2;
- ctx.beginPath();ctx.ellipse(x+22,414,9,26,0,0,Math.PI*2);ctx.stroke();
+ ctx.strokeStyle="#fff";
+ ctx.beginPath();ctx.ellipse(x+22,y+40,9,26,0,0,Math.PI*2);ctx.stroke();
 }
 
-// HUD
+function drawBoss(){
+ if(!boss.alive)return;
+ const x=boss.x-camera;
+ const y=boss.y;
+
+ if(boss.hitFlash>0)ctx.fillStyle="#fff";
+ else ctx.fillStyle="#78508f";
+
+ ctx.fillRect(x+10,y+10,56,50);
+ ctx.fillRect(x,y+22,76,34);
+ ctx.fillRect(x+7,y+55,14,12);
+ ctx.fillRect(x+31,y+55,14,12);
+ ctx.fillRect(x+55,y+55,14,12);
+
+ ctx.fillStyle="#34203f";
+ ctx.fillRect(x+20,y+25,9,12);
+ ctx.fillRect(x+48,y+25,9,12);
+ ctx.fillStyle="#ffb5e6";
+ ctx.fillRect(x+22,y+28,5,6);
+ ctx.fillRect(x+50,y+28,5,6);
+
+ ctx.fillStyle="#d5a5ff";
+ ctx.fillRect(x+24,y+5,8,8);
+ ctx.fillRect(x+44,y+5,8,8);
+
+ // Boss health bar
+ ctx.fillStyle="#160e20";
+ ctx.fillRect(310,90,340,22);
+ ctx.fillStyle="#c5a1e5";
+ ctx.font="13px monospace";
+ ctx.textAlign="center";
+ ctx.fillText("THE HOLLOW GUARDIAN",480,84);
+ ctx.fillStyle="#422744";
+ ctx.fillRect(316,96,328,10);
+ ctx.fillStyle="#e66aaf";
+ ctx.fillRect(316,96,328*(boss.hp/boss.maxHp),10);
+ ctx.textAlign="left";
+}
 
 function drawHUD(){
- ctx.fillStyle="rgba(12,9,24,.8)";
- ctx.fillRect(15,15,300,54);
+ ctx.fillStyle="rgba(12,9,24,.83)";
+ ctx.fillRect(15,15,270,54);
  ctx.fillStyle="#eee3ff";
- ctx.font="bold 19px monospace";
+ ctx.font="bold 18px monospace";
  ctx.fillText("LIVES: "+"♥ ".repeat(lives),28,39);
  ctx.fillStyle="#a8f4ff";
- ctx.font="16px monospace";
+ ctx.font="15px monospace";
  ctx.fillText("SOULS: "+score,28,59);
-
- ctx.fillStyle="#c7b2e7";
- ctx.font="13px monospace";
- ctx.fillText(area==="forest"?"WORLD 1 - THE FORGOTTEN WOODS":"SECRET AREA - THE HOLLOW BELOW",560,35);
-
- if(area==="forest"&&score>=10){
-  ctx.fillStyle="#d9aaff";
-  ctx.font="12px monospace";
-  ctx.fillText("THE SECRET DOOR IS UNLOCKED",620,55);
- }
 }
-
-// MESSAGE DISPLAY
 
 function drawMessage(){
  if(messageTimer<=0)return;
  messageTimer--;
 
- const alpha=Math.min(1,messageTimer/25);
  ctx.save();
- ctx.globalAlpha=alpha;
+ ctx.globalAlpha=Math.min(1,messageTimer/25);
  ctx.fillStyle="rgba(12,8,25,.94)";
  ctx.fillRect(145,375,670,105);
  ctx.strokeStyle="#c7a5ff";
@@ -501,8 +575,7 @@ function drawMessage(){
  ctx.fillStyle="#f0e4ff";
  ctx.font="bold 17px monospace";
 
- const words=activeMessage.split(" ");
- let lines=[],line="";
+ let words=activeMessage.split(" "),lines=[],line="";
  for(const word of words){
   const test=line?line+" "+word:word;
   if(ctx.measureText(test).width>590){
@@ -510,90 +583,92 @@ function drawMessage(){
   }else line=test;
  }
  if(line)lines.push(line);
- const startY=432-(lines.length-1)*11;
- lines.forEach((text,i)=>ctx.fillText(text,480,startY+i*23));
+ const start=432-(lines.length-1)*11;
+ lines.forEach((t,i)=>ctx.fillText(t,480,start+i*23));
  ctx.restore();
  ctx.textAlign="left";
 }
 
-function drawOverlay(title,subtitle){
- ctx.fillStyle="rgba(8,5,18,.82)";
+function drawJournal(){
+ if(!journalOpen)return;
+ ctx.fillStyle="rgba(5,3,14,.91)";
  ctx.fillRect(0,0,W,H);
+ ctx.strokeStyle="#b68ad9";
+ ctx.lineWidth=3;
+ ctx.strokeRect(100,65,760,410);
+
  ctx.textAlign="center";
- ctx.fillStyle="#d4b4ff";
- ctx.font="bold 44px monospace";
- ctx.fillText(title,W/2,220);
- ctx.fillStyle="#eee3ff";
+ ctx.fillStyle="#d8baff";
+ ctx.font="bold 30px monospace";
+ ctx.fillText("THE EXPLORER'S JOURNAL",480,110);
+
+ ctx.fillStyle="#a5f7ff";
  ctx.font="18px monospace";
- ctx.fillText(subtitle,W/2,270);
- ctx.font="14px monospace";
- ctx.fillStyle="#b9a8d0";
- ctx.fillText("Press ENTER or tap RESTART",W/2,320);
+ ctx.fillText("SOULS COLLECTED: "+score,480,150);
+
+ ctx.textAlign="left";
+ ctx.font="15px monospace";
+ ctx.fillStyle="#eee3ff";
+
+ let y=190;
+ const entries=journalEntries.slice(-11);
+ for(const entry of entries){
+  ctx.fillText("✦ "+entry,145,y);
+  y+=23;
+ }
+
+ ctx.textAlign="center";
+ ctx.fillStyle="#a58bc8";
+ ctx.font="13px monospace";
+ ctx.fillText("TAP JOURNAL AGAIN OR PRESS J TO CLOSE",480,445);
  ctx.textAlign="left";
 }
 
-// AREA TRANSITIONS
-
-function enterSecretArea(){
- forestReturnX=player.x;
- area="secret";
- camera=0;
- player.x=420;
- player.y=390;
- player.vx=0;
- player.vy=0;
- player.grounded=false;
- secretCollected=[];
- activeMessage="You found the place beneath the place.";
- messageTimer=240;
- document.getElementById("world-name").textContent="SECRET AREA: THE HOLLOW BELOW";
+function drawOverlay(title,subtitle){
+ ctx.fillStyle="rgba(8,5,18,.84)";
+ ctx.fillRect(0,0,W,H);
+ ctx.textAlign="center";
+ ctx.fillStyle="#d4b4ff";
+ ctx.font="bold 42px monospace";
+ ctx.fillText(title,480,220);
+ ctx.fillStyle="#eee3ff";
+ ctx.font="17px monospace";
+ ctx.fillText(subtitle,480,270);
+ ctx.font="14px monospace";
+ ctx.fillStyle="#b9a8d0";
+ ctx.fillText("PRESS ENTER OR TAP RESTART",480,320);
+ ctx.textAlign="left";
 }
 
-function leaveSecretArea(){
- area="forest";
- player.x=forestReturnX-100;
- player.y=408;
- player.vx=0;
- player.vy=0;
- camera=Math.max(0,player.x-W*.36);
- document.getElementById("world-name").textContent="WORLD 1: THE FORGOTTEN WOODS";
- activeMessage="You came back. But something followed you.";
- messageTimer=240;
-}
+// PHYSICS
 
-// SHARED PLAYER PHYSICS
-
-function movePlayer(platformList){
+function movePlayer(platforms){
  const speed=4.2;
- const gravity=.58;
- const jumpPower=-12.5;
-
  player.vx=0;
  if(keys.left){player.vx=-speed;player.facing=-1}
  if(keys.right){player.vx=speed;player.facing=1}
 
  if(keys.jump&&!player.jumpHeld){
-  jumpBuffer=9;
   player.jumpHeld=true;
+  player.jumpBuffer=9;
  }
  if(!keys.jump)player.jumpHeld=false;
 
- if(jumpBuffer>0)jumpBuffer--;
+ if(player.jumpBuffer>0)player.jumpBuffer--;
 
- if(jumpBuffer>0&&player.grounded){
-  player.vy=jumpPower;
+ if(player.jumpBuffer>0&&player.grounded){
+  player.vy=-12.5;
   player.grounded=false;
-  jumpBuffer=0;
+  player.jumpBuffer=0;
  }
 
  player.x+=player.vx;
- previousBottom=player.y+player.h;
- player.vy+=gravity;
- player.vy=Math.min(player.vy,13);
+ const previousBottom=player.y+player.h;
+ player.vy=Math.min(player.vy+.58,13);
  player.y+=player.vy;
  player.grounded=false;
 
- for(const p of platformList){
+ for(const p of platforms){
   if(player.x+player.w>p.x&&player.x<p.x+p.w&&
      previousBottom<=p.y&&player.y+player.h>=p.y&&player.vy>=0){
    player.y=p.y-player.h;
@@ -601,25 +676,35 @@ function movePlayer(platformList){
    player.grounded=true;
   }
  }
+ return previousBottom;
 }
 
-// FOREST UPDATE
-
-function updateForest(){
- movePlayer(platforms);
- player.x=Math.max(0,Math.min(worldWidth-player.w,player.x));
-
- if(player.x>2150&&checkpoint<2150)checkpoint=2180;
-
- for(let i=0;i<coinPositions.length;i++){
-  if(collected.includes(i))continue;
-  const [cx,cy]=coinPositions[i];
-  if(overlap(player,{x:cx-10,y:cy-12,w:20,h:24})){
-   collected.push(i);
+function collectSouls(list,done){
+ for(let i=0;i<list.length;i++){
+  if(done.includes(i))continue;
+  const [x,y]=list[i];
+  if(overlap(player,{x:x-10,y:y-12,w:20,h:24})){
+   done.push(i);
    score++;
-   revealMessage();
+   randomMessage();
+   addEntry("Collected a lost soul.");
   }
  }
+}
+
+// FOREST
+
+function updateForest(){
+ const previousBottom=movePlayer(forestPlatforms);
+ player.x=Math.max(0,Math.min(forestWidth-player.w,player.x));
+
+ if(player.x>2150&&checkpoint<2150){
+  checkpoint=2180;
+  addEntry("Reached the old forest checkpoint.");
+  say("A familiar feeling. You have been here before.");
+ }
+
+ collectSouls(forestSouls,collected);
 
  for(const e of enemies){
   if(!e.alive)continue;
@@ -631,141 +716,64 @@ function updateForest(){
     e.alive=false;
     player.vy=-9;
     score+=3;
-    revealMessage();
-   }else hurtPlayer();
+    randomMessage();
+    addEntry("Defeated a wandering ghost.");
+   }else hurt();
   }
  }
 
- // Secret door interaction
- if(score>=10&&overlap(player,{
-  x:secretDoor.x-5,y:secretDoor.y,w:secretDoor.w+10,h:secretDoor.h
- })){
-  enterSecretArea();
+ if(score>=10&&overlap(player,{x:4135,y:370,w:60,h:80})){
+  forestReturn=player.x;
+  area="cave";
+  player=makePlayer(130);
+  camera=0;
+  addEntry("Discovered the entrance to the Hollow Below.");
+  say("You found the place beneath the place.");
+  document.getElementById("world-name").textContent="SECRET AREA: THE HOLLOW BELOW";
   return;
  }
 
- if(player.y>620)hurtPlayer();
-
- if(player.x>4210)gameState="won";
-
- camera=player.x-W*.36;
- camera=Math.max(0,Math.min(worldWidth-W,camera));
+ if(player.y>600)hurt();
+ if(player.x>4210){
+  gameState="won";
+ }
+ camera=Math.max(0,Math.min(forestWidth-W,player.x-W*.36));
 }
 
-// SECRET ROOM UPDATE
+// CAVE AND BOSS
 
-function updateSecret(){
- movePlayer(secretPlatforms);
+function updateCave(){
+ const previousBottom=movePlayer(cavePlatforms);
  player.x=Math.max(0,Math.min(W-player.w,player.x));
 
- for(let i=0;i<secretCoins.length;i++){
-  if(secretCollected.includes(i))continue;
-  const [cx,cy]=secretCoins[i];
-  if(overlap(player,{x:cx-10,y:cy-12,w:20,h:24})){
-   secretCollected.push(i);
-   score++;
-   revealMessage();
+ collectSouls(caveSouls,secretCollected);
+
+ if(boss.alive){
+  boss.x+=boss.speed;
+  if(boss.x<620||boss.x>830)boss.speed*=-1;
+  if(boss.hitFlash>0)boss.hitFlash--;
+
+  if(overlap(player,{x:boss.x,y:boss.y,w:boss.w,h:boss.h})){
+   if(player.vy>0&&previousBottom<=boss.y+18){
+    boss.hp--;
+    boss.hitFlash=12;
+    player.vy=-11;
+    boss.speed*=1.18;
+    say("THE GUARDIAN FEELS YOUR PRESENCE.");
+    if(boss.hp<=0){
+     boss.alive=false;
+     bossDefeated=true;
+     gameState="bosswon";
+     addEntry("Defeated the Hollow Guardian.");
+     addEntry("The Abandoned Castle has been revealed.");
+     say("The Guardian has fallen. The castle awaits.");
+    }
+   }else{
+    hurt();
+   }
   }
  }
 
- // Return portal
- if(overlap(player,{x:55,y:375,w:45,h:80})){
-  leaveSecretArea();
-  return;
- }
-
- if(player.y>620){
-  player.x=420;
-  player.y=360;
-  player.vx=0;
-  player.vy=0;
+ if(player.y>600){
   lives--;
-  if(lives<=0)gameState="gameover";
- }
-}
-
-// MAIN UPDATE
-
-function update(){
- if(gameState!=="playing")return;
- frame++;
- if(invincible>0)invincible--;
-
- if(area==="forest")updateForest();
- else updateSecret();
-}
-
-// RENDER
-
-function renderForest(){
- drawBackground();
- drawPlatforms(platforms,camera);
-
- for(let i=0;i<coinPositions.length;i++){
-  if(!collected.includes(i)){
-   const [x,y]=coinPositions[i];
-   drawCoin(x-camera,y);
-  }
- }
-
- for(const e of enemies)drawGhost(e);
- drawSecretDoor();
- drawPlayer();
- drawHUD();
- drawMessage();
-}
-
-function renderSecret(){
- drawSecretBackground();
- drawPlatforms(secretPlatforms,0);
- drawReturnPortal();
-
- for(let i=0;i<secretCoins.length;i++){
-  if(!secretCollected.includes(i)){
-   const [x,y]=secretCoins[i];
-   drawCoin(x,y);
-  }
- }
-
- drawPlayer();
- drawHUD();
- drawMessage();
-
- ctx.fillStyle="#cba9ed";
- ctx.font="12px monospace";
- ctx.textAlign="center";
- ctx.fillText("FIVE SOULS ARE HIDDEN HERE.",480,510);
- ctx.textAlign="left";
-}
-
-function render(){
- if(area==="forest")renderForest();
- else renderSecret();
-
- if(gameState==="gameover")drawOverlay("GAME OVER","The hollow has claimed you...");
- if(gameState==="won")drawOverlay("YOU ESCAPED!","The Forgotten Woods are behind you.");
-}
-
-function loop(){
- update();
- render();
- requestAnimationFrame(loop);
-}
-
-// KEYBOARD CONTROLS
-
-document.addEventListener("keydown",e=>{
- if(["ArrowLeft","ArrowRight","ArrowUp"," "].includes(e.key))e.preventDefault();
-
- const key=e.key.toLowerCase();
- if(e.key==="ArrowLeft"||key==="a")keys.left=true;
- if(e.key==="ArrowRight"||key==="d")keys.right=true;
- if(e.key===" "||e.key==="ArrowUp"||key==="w")keys.jump=true;
-
- if(e.key==="Enter"&&gameState!=="playing")resetGame();
-});
-
-document.addEventListener("keyup",e=>{
- const key=e.key.toLowerCase();
- if(e.key==="ArrowLeft"||key==="a")keys.left=false;
- i
+  if(lives<=0)gameState="
