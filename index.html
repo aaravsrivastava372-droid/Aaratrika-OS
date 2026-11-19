@@ -883,6 +883,139 @@ setTimeout(()=>{
  const n=notifications[Math.floor(Math.random()*notifications.length)];
  showToast(n[0],n[1]);
 },5000);
+ 
+const aaratrikaQuotes = [
+  {
+    text: "Ham apne bacche kaise palenge",
+    label: "FUTURE PLANNING DEPARTMENT"
+  },
+  {
+    text: "Mera kutta tumhe kha jayega",
+    label: "THREAT DETECTION SYSTEM"
+  },
+  {
+    text: "Periods pain hei toh paani peelo",
+    label: "MEDICAL ADVICE.exe"
+  },
+  {
+    text: "Ek jhaapad marungi na",
+    label: "ANGER MANAGEMENT DIVISION"
+  },
+  {
+    text: "12th khatam hone se pehle Mera dehant na ho jaye",
+    label: "ACADEMIC SURVIVAL PROTOCOL"
+  },
+  {
+    text: "Are yawr aap na so jao",
+    label: "SLEEP PREVENTION SYSTEM"
+  },
+  {
+    text: "Ro mat",
+    label: "EMOTIONAL SUPPORT SERVICES"
+  },
+  {
+    text: "Ouuu shiiii",
+    label: "UNIVERSAL ERROR SOUND"
+  },
+  {
+    text: "Apka naya bf banega jab toh usse mangna",
+    label: "BOYFRIEND REPLACEMENT WARNING"
+  },
+  {
+    text: "Loru",
+    label: "THE CLASSIC. NO EXPLANATION REQUIRED."
+  }
+];
+
+let lastRandQuote = -1;
+
+function randTab(tab, button) {
+  document.querySelectorAll('.rand-tabs button')
+    .forEach(b => b.classList.remove('active'));
+
+  button.classList.add('active');
+
+  ['quotes', 'translator', 'daily'].forEach(name => {
+    document.getElementById('rand-' + name).style.display =
+      name === tab ? 'block' : 'none';
+  });
+}
+
+function getRandomQuote() {
+  let index;
+
+  do {
+    index = Math.floor(Math.random() * aaratrikaQuotes.length);
+  } while (index === lastRandQuote && aaratrikaQuotes.length > 1);
+
+  lastRandQuote = index;
+  return aaratrikaQuotes[index];
+}
+
+function generateRandQuote() {
+  const quote = getRandomQuote();
+
+  document.getElementById('rand-quote-text').textContent =
+    '"' + quote.text + '"';
+
+  document.getElementById('rand-quote-label').textContent =
+    quote.label;
+
+  document.getElementById('rand-status').textContent =
+    'SYSTEM STATUS: Quote generated. Emotional damage detected.';
+}
+
+function generateDailyRand() {
+  const quote = getRandomQuote();
+
+  document.getElementById('rand-daily-text').textContent =
+    '"' + quote.text + '"';
+
+  document.getElementById('rand-status').textContent =
+    'DAILY RAND DELIVERED. Proceed with caution.';
+}
+
+function translateRand() {
+  const input = document.getElementById('rand-input').value
+    .trim().toLowerCase();
+
+  const output = document.getElementById('rand-translation');
+
+  if (!input) {
+    output.textContent = 'ERROR: Please enter a sentence first.';
+    return;
+  }
+
+  let translation;
+
+  if (input.includes('sleep') || input.includes('tired')) {
+    translation = 'Are yawr aap na so jao';
+  } else if (input.includes('cry') || input.includes('sad')) {
+    translation = 'Ro mat';
+  } else if (input.includes('future') || input.includes('children')) {
+    translation = 'Ham apne bacche kaise palenge';
+  } else if (input.includes('dog')) {
+    translation = 'Mera kutta tumhe kha jayega';
+  } else if (input.includes('pain') || input.includes('hurt')) {
+    translation = 'Periods pain hei toh paani peelo';
+  } else if (input.includes('boyfriend') || input.includes('ex')) {
+    translation = 'Apka naya bf banega jab toh usse mangna';
+  } else if (input.includes('angry') || input.includes('annoy')) {
+    translation = 'Ek jhaapad marungi na';
+  } else {
+    const quote = getRandomQuote();
+    translation = quote.text;
+  }
+
+  output.innerHTML =
+    '<span class="rand-stamp">TRANSLATION COMPLETE</span><br><strong></strong>';
+
+  output.querySelector('strong').textContent = translation;
+
+  document.getElementById('rand-status').textContent =
+    'TRANSLATOR STATUS: Accuracy questionable. Confidence absolute.';
+}
+ 
 </script>
 
 </body>
