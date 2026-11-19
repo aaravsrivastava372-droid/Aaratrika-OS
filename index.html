@@ -19,12 +19,10 @@ body {
   font-family: monospace;
   overflow-x: hidden;
   text-align: center;
-  touch-action: none;
+  touch-action: pan-y;
 }
 
-header {
-  padding: 16px 8px 10px;
-}
+header { padding: 16px 8px 10px; }
 
 h1 {
   color: #c7a5ff;
@@ -53,6 +51,7 @@ h1 {
   border: 4px solid #60477f;
   border-radius: 5px;
   image-rendering: pixelated;
+  touch-action: none;
 }
 
 #instructions {
@@ -138,7 +137,7 @@ footer {
 
 <div id="instructions">
   KEYBOARD: A / D or ← / → to move · SPACE / W / ↑ to jump<br>
-  MOBILE: Use the buttons below · Collect soul-orbs · Avoid ghosts
+  MOBILE: Use the buttons below · Collect souls · Avoid ghosts
 </div>
 
 <div id="controls">
@@ -151,9 +150,7 @@ footer {
 
 <button id="restart">↻ RESTART GAME</button>
 
-<footer>
-  HAUNTED HOLLOW · A PIXEL ADVENTURE
-</footer>
+<footer>HAUNTED HOLLOW · A PIXEL ADVENTURE</footer>
 
 <script>
 const canvas = document.getElementById("game");
@@ -168,13 +165,86 @@ const keys = {
   jump: false
 };
 
+// RANDOM MESSAGES
+
+const secretMessages = [
+  "Ham apne bacche kaise palenge",
+  "Mera kutta tumhe kha jayega",
+  "Periods pain hei toh paani peelo",
+  "Ek jhaapad marungi na",
+  "12th khatam hone se pehle Mera dehant na ho jaye",
+  "Are yawr aap na so jao",
+  "Ro mat",
+  "Ouuu shiiii",
+  "Apka naya bf banega jab toh usse mangna",
+  "Loru",
+
+  "The forest remembers every visitor.",
+  "You weren't supposed to find this place.",
+  "Somewhere, a ghost is judging your jumps.",
+  "The moon has been following you.",
+  "I think that tree just moved.",
+  "Don't trust the smiling mushrooms.",
+  "Your little adventure is being observed.",
+  "There are footsteps behind you.",
+  "The ghosts have a group chat. You're in it.",
+  "Achievement unlocked: Professional Ghost Annoyer.",
+  "A soul collected. Your taxes remain unpaid.",
+  "Even the dead have better Wi-Fi here.",
+  "Rumour says there's a secret door somewhere.",
+  "You are doing suspiciously well.",
+  "The forest says hello. It is not friendly.",
+  "Somebody left a light on in the castle.",
+  "I wonder what happens if you collect everything.",
+  "This message will self-destruct. Just kidding.",
+  "You have 99 problems and a ghost is one.",
+  "The little explorer has main character energy.",
+  "Not all lost souls want to be found.",
+  "A strange feeling tells you to keep going.",
+  "The next ghost owes you an apology.",
+  "You found a soul. It found a new home.",
+  "The trees are gossiping about you.",
+  "If you hear a laugh, no you didn't.",
+  "This forest has terrible hospitality.",
+  "A ghost just filed a complaint against you.",
+  "The darkness is oddly impressed.",
+  "Your bravery has been noted. Probably.",
+  "Someone is watching from the castle window.",
+  "The mushrooms know more than they tell.",
+  "Don't forget to look up.",
+  "Somewhere, a tiny ghost is cheering for you.",
+  "You are officially on the forest's guest list.",
+  "A little mystery never hurt anyone.",
+  "The moon has a favourite player. Guess who?",
+  "Keep going. There's something waiting ahead.",
+  "The forest is not as empty as it looks."
+];
+
+let activeMessage = "";
+let messageTimer = 0;
+let lastMessageIndex = -1;
+
+function revealMessage() {
+  let index;
+
+  do {
+    index = Math.floor(Math.random() * secretMessages.length);
+  } while (
+    index === lastMessageIndex &&
+    secretMessages.length > 1
+  );
+
+  lastMessageIndex = index;
+  activeMessage = secretMessages[index];
+  messageTimer = 210;
+}
+
 let player;
 let camera;
 let lives;
 let score;
 let collected;
 let enemies;
-let particles;
 let gameState;
 let invincible;
 let checkpoint;
@@ -185,25 +255,25 @@ let frame = 0;
 const worldWidth = 4300;
 
 const platforms = [
-  {x:0, y:450, w:650, h:100},
-  {x:730, y:450, w:570, h:100},
-  {x:1380, y:450, w:660, h:100},
-  {x:2130, y:450, w:670, h:100},
-  {x:2890, y:450, w:700, h:100},
-  {x:3690, y:450, w:610, h:100},
+  {x:0,y:450,w:650,h:100},
+  {x:730,y:450,w:570,h:100},
+  {x:1380,y:450,w:660,h:100},
+  {x:2130,y:450,w:670,h:100},
+  {x:2890,y:450,w:700,h:100},
+  {x:3690,y:450,w:610,h:100},
 
-  {x:210, y:370, w:130, h:18},
-  {x:420, y:310, w:150, h:18},
-  {x:850, y:360, w:130, h:18},
-  {x:1070, y:300, w:130, h:18},
-  {x:1500, y:360, w:140, h:18},
-  {x:1740, y:300, w:150, h:18},
-  {x:2210, y:360, w:140, h:18},
-  {x:2460, y:300, w:150, h:18},
-  {x:3000, y:360, w:150, h:18},
-  {x:3250, y:300, w:140, h:18},
-  {x:3800, y:360, w:150, h:18},
-  {x:4020, y:300, w:140, h:18}
+  {x:210,y:370,w:130,h:18},
+  {x:420,y:310,w:150,h:18},
+  {x:850,y:360,w:130,h:18},
+  {x:1070,y:300,w:130,h:18},
+  {x:1500,y:360,w:140,h:18},
+  {x:1740,y:300,w:150,h:18},
+  {x:2210,y:360,w:140,h:18},
+  {x:2460,y:300,w:150,h:18},
+  {x:3000,y:360,w:150,h:18},
+  {x:3250,y:300,w:140,h:18},
+  {x:3800,y:360,w:150,h:18},
+  {x:4020,y:300,w:140,h:18}
 ];
 
 const coinPositions = [
@@ -219,14 +289,14 @@ const coinPositions = [
 
 function makePlayer() {
   return {
-    x: 60,
-    y: 390,
-    w: 28,
-    h: 42,
-    vx: 0,
-    vy: 0,
-    grounded: false,
-    facing: 1
+    x:60,
+    y:390,
+    w:28,
+    h:42,
+    vx:0,
+    vy:0,
+    grounded:false,
+    facing:1
   };
 }
 
@@ -248,11 +318,14 @@ function resetGame() {
   score = 0;
   collected = [];
   enemies = makeEnemies();
-  particles = [];
   gameState = "playing";
   invincible = 0;
   checkpoint = 60;
   jumpBuffer = 0;
+
+  activeMessage = "";
+  messageTimer = 0;
+  lastMessageIndex = -1;
 }
 
 function hurtPlayer() {
@@ -273,10 +346,10 @@ function hurtPlayer() {
 }
 
 function overlap(a,b) {
-  return a.x < b.x + b.w &&
-         a.x + a.w > b.x &&
-         a.y < b.y + b.h &&
-         a.y + a.h > b.y;
+  return a.x < b.x+b.w &&
+         a.x+a.w > b.x &&
+         a.y < b.y+b.h &&
+         a.y+a.h > b.y;
 }
 
 function drawBackground() {
@@ -287,7 +360,6 @@ function drawBackground() {
   ctx.fillStyle = sky;
   ctx.fillRect(0,0,W,H);
 
-  // Moon
   ctx.fillStyle = "#d9d1f0";
   ctx.beginPath();
   ctx.arc(790,100,48,0,Math.PI*2);
@@ -298,28 +370,29 @@ function drawBackground() {
   ctx.arc(810,82,43,0,Math.PI*2);
   ctx.fill();
 
-  // Stars
-  for (let i=0;i<55;i++) {
-    let x = (i*173 - camera*0.15) % W;
-    if(x<0) x+=W;
-    let y = (i*67)%220;
-    ctx.fillStyle = i%3===0 ? "#d9c9ff" : "#827ba5";
+  for(let i=0;i<55;i++) {
+    let x = (i*173-camera*0.15)%W;
+    if(x<0)x+=W;
+
+    let y=(i*67)%220;
+
+    ctx.fillStyle=i%3===0?"#d9c9ff":"#827ba5";
     ctx.fillRect(x,y,3,3);
   }
 
-  // Distant hills
-  ctx.fillStyle = "#27243c";
-  for(let i=0;i<8;i++){
-    let x = i*180 - (camera*0.25)%180;
+  ctx.fillStyle="#27243c";
+
+  for(let i=0;i<8;i++) {
+    let x=i*180-(camera*0.25)%180;
+
     ctx.beginPath();
     ctx.arc(x,410,120,Math.PI,0);
     ctx.fill();
   }
 
-  // Haunted trees
-  for(let i=0;i<16;i++){
-    let x = i*150 - (camera*0.45)%150;
-    drawTree(x, 415, 0.8+(i%3)*0.15);
+  for(let i=0;i<16;i++) {
+    let x=i*150-(camera*0.45)%150;
+    drawTree(x,415,0.8+(i%3)*0.15);
   }
 }
 
@@ -330,7 +403,6 @@ function drawTree(x,y,s) {
 
   ctx.fillStyle="#211b30";
   ctx.fillRect(-9,-105,18,110);
-
   ctx.fillRect(-9,-80,-38,9);
   ctx.fillRect(0,-65,42,9);
   ctx.fillRect(-35,-95,8,30);
@@ -346,21 +418,24 @@ function drawTree(x,y,s) {
 
 function drawPlatforms() {
   for(const p of platforms) {
-    const x = Math.floor(p.x-camera);
-    if(x+p.w<0 || x>W) continue;
+    const x=Math.floor(p.x-camera);
 
-    ctx.fillStyle = "#352b40";
+    if(x+p.w<0||x>W)continue;
+
+    ctx.fillStyle="#352b40";
     ctx.fillRect(x,p.y,p.w,p.h);
 
-    ctx.fillStyle = "#58714c";
+    ctx.fillStyle="#58714c";
     ctx.fillRect(x,p.y,p.w,9);
 
-    ctx.fillStyle = "#8da66a";
+    ctx.fillStyle="#8da66a";
+
     for(let i=0;i<p.w;i+=26) {
       ctx.fillRect(x+i,p.y-3,10,4);
     }
 
     ctx.fillStyle="#292035";
+
     for(let i=10;i<p.w;i+=38) {
       ctx.fillRect(x+i,p.y+22,15,5);
     }
@@ -370,59 +445,53 @@ function drawPlatforms() {
 function drawCoin(x,y) {
   ctx.fillStyle="#a5f7ff";
   ctx.fillRect(x-5,y-10,10,20);
+
   ctx.fillStyle="#e4ffff";
   ctx.fillRect(x-2,y-7,4,14);
+
   ctx.fillStyle="#7a9aff";
   ctx.fillRect(x-8,y-4,3,8);
   ctx.fillRect(x+5,y-4,3,8);
 }
 
 function drawPlayer() {
-  if(invincible>0 && Math.floor(frame/5)%2===0) return;
+  if(invincible>0&&Math.floor(frame/5)%2===0)return;
 
   const x=Math.floor(player.x-camera);
   const y=Math.floor(player.y);
 
   ctx.save();
 
-  if(player.facing<0){
+  if(player.facing<0) {
     ctx.translate(x+player.w,y);
     ctx.scale(-1,1);
     ctx.translate(-x,-y);
   }
 
-  // Shadow
   ctx.fillStyle="#171323";
   ctx.fillRect(x+3,y+39,25,5);
 
-  // Boots
   ctx.fillStyle="#35243d";
   ctx.fillRect(x+3,y+34,10,8);
   ctx.fillRect(x+17,y+34,10,8);
 
-  // Body
   ctx.fillStyle="#5c466e";
   ctx.fillRect(x+5,y+16,19,20);
 
-  // Coat
   ctx.fillStyle="#a18ac1";
   ctx.fillRect(x+8,y+18,13,17);
 
-  // Scarf
   ctx.fillStyle="#b94e70";
   ctx.fillRect(x+5,y+17,21,5);
   ctx.fillRect(x+19,y+20,5,9);
 
-  // Head
   ctx.fillStyle="#f0c6a8";
   ctx.fillRect(x+5,y+3,20,17);
 
-  // Hair
   ctx.fillStyle="#32253d";
   ctx.fillRect(x+3,y,22,8);
   ctx.fillRect(x+3,y+5,5,9);
 
-  // Eye
   ctx.fillStyle="#211a30";
   ctx.fillRect(x+19,y+10,3,3);
 
@@ -430,7 +499,7 @@ function drawPlayer() {
 }
 
 function drawGhost(e) {
-  if(!e.alive) return;
+  if(!e.alive)return;
 
   const x=Math.floor(e.x-camera);
   const y=Math.floor(e.y);
@@ -457,7 +526,7 @@ function drawHUD() {
 
   ctx.fillStyle="#eee3ff";
   ctx.font="bold 19px monospace";
-  ctx.fillText("LIVES: "+ "♥ ".repeat(lives),28,39);
+  ctx.fillText("LIVES: "+"♥ ".repeat(lives),28,39);
 
   ctx.fillStyle="#a8f4ff";
   ctx.font="16px monospace";
@@ -468,11 +537,68 @@ function drawHUD() {
   ctx.fillText("WORLD 1 - THE FORGOTTEN WOODS",620,35);
 }
 
+// MESSAGE DISPLAY
+
+function drawMessage() {
+  if(messageTimer<=0)return;
+
+  messageTimer--;
+
+  const alpha=Math.min(1,messageTimer/25);
+
+  ctx.save();
+  ctx.globalAlpha=alpha;
+
+  ctx.fillStyle="rgba(12,8,25,0.94)";
+  ctx.fillRect(145,375,670,105);
+
+  ctx.strokeStyle="#c7a5ff";
+  ctx.lineWidth=2;
+  ctx.strokeRect(145,375,670,105);
+
+  ctx.textAlign="center";
+
+  ctx.fillStyle="#a58bc8";
+  ctx.font="12px monospace";
+  ctx.fillText("✦ A MESSAGE FROM THE HOLLOW ✦",480,401);
+
+  ctx.fillStyle="#f0e4ff";
+  ctx.font="bold 17px monospace";
+
+  // Automatically wrap long messages
+  const words=activeMessage.split(" ");
+  let lines=[];
+  let line="";
+
+  for(const word of words) {
+    const test=line?line+" "+word:word;
+
+    if(ctx.measureText(test).width>590) {
+      lines.push(line);
+      line=word;
+    } else {
+      line=test;
+    }
+  }
+
+  if(line)lines.push(line);
+
+  const startY=432-(lines.length-1)*11;
+
+  lines.forEach((text,i)=>{
+    ctx.fillText(text,480,startY+i*23);
+  });
+
+  ctx.restore();
+  ctx.textAlign="left";
+}
+
 function drawOverlay(title,subtitle) {
   ctx.fillStyle="rgba(8,5,18,0.82)";
   ctx.fillRect(0,0,W,H);
 
   ctx.textAlign="center";
+
   ctx.fillStyle="#d4b4ff";
   ctx.font="bold 44px monospace";
   ctx.fillText(title,W/2,220);
@@ -489,12 +615,12 @@ function drawOverlay(title,subtitle) {
 }
 
 function update() {
-  if(gameState!=="playing") return;
+  if(gameState!=="playing")return;
 
   frame++;
 
-  if(invincible>0) invincible--;
-  if(jumpBuffer>0) jumpBuffer--;
+  if(invincible>0)invincible--;
+  if(jumpBuffer>0)jumpBuffer--;
 
   const speed=4.2;
   const gravity=0.58;
@@ -506,16 +632,15 @@ function update() {
     player.vx=-speed;
     player.facing=-1;
   }
+
   if(keys.right) {
     player.vx=speed;
     player.facing=1;
   }
 
-  if(keys.jump) {
-    jumpBuffer=9;
-  }
+  if(keys.jump)jumpBuffer=9;
 
-  if(jumpBuffer>0 && player.grounded) {
+  if(jumpBuffer>0&&player.grounded) {
     player.vy=jumpPower;
     player.grounded=false;
     jumpBuffer=0;
@@ -532,13 +657,12 @@ function update() {
 
   player.grounded=false;
 
-  // Platform collision
   for(const p of platforms) {
     if(
-      player.x+player.w>p.x &&
-      player.x<p.x+p.w &&
-      previousBottom<=p.y &&
-      player.y+player.h>=p.y &&
+      player.x+player.w>p.x&&
+      player.x<p.x+p.w&&
+      previousBottom<=p.y&&
+      player.y+player.h>=p.y&&
       player.vy>=0
     ) {
       player.y=p.y-player.h;
@@ -547,36 +671,39 @@ function update() {
     }
   }
 
-  // Checkpoint
-  if(player.x>2150 && checkpoint<2150) {
+  if(player.x>2150&&checkpoint<2150) {
     checkpoint=2180;
   }
 
-  // Collect souls
+  // SOUL COLLECTION
   for(let i=0;i<coinPositions.length;i++) {
-    if(collected.includes(i)) continue;
+    if(collected.includes(i))continue;
 
     const [cx,cy]=coinPositions[i];
+
     if(overlap(player,{x:cx-10,y:cy-12,w:20,h:24})) {
       collected.push(i);
       score++;
+      revealMessage();
     }
   }
 
-  // Enemies
+  // GHOST ENCOUNTERS
   for(const e of enemies) {
-    if(!e.alive) continue;
+    if(!e.alive)continue;
 
     e.x+=e.speed;
-    if(e.x<e.start || e.x+34>e.end) {
+
+    if(e.x<e.start||e.x+34>e.end) {
       e.speed*=-1;
     }
 
     if(overlap(player,{x:e.x,y:e.y,w:34,h:32})) {
-      if(player.vy>0 && previousBottom<=e.y+13) {
+      if(player.vy>0&&previousBottom<=e.y+13) {
         e.alive=false;
         player.vy=-9;
         score+=3;
+        revealMessage();
       } else {
         hurtPlayer();
       }
@@ -606,10 +733,11 @@ function render() {
     }
   }
 
-  for(const e of enemies) drawGhost(e);
+  for(const e of enemies)drawGhost(e);
 
   drawPlayer();
   drawHUD();
+  drawMessage();
 
   if(gameState==="gameover") {
     drawOverlay("GAME OVER","The forest has claimed you...");
@@ -626,29 +754,35 @@ function loop() {
   requestAnimationFrame(loop);
 }
 
-// Keyboard controls
+// KEYBOARD CONTROLS
+
 document.addEventListener("keydown",e=>{
   if(["ArrowLeft","ArrowRight","ArrowUp"," "].includes(e.key)) {
     e.preventDefault();
   }
 
-  if(e.key==="ArrowLeft" || e.key.toLowerCase()==="a") keys.left=true;
-  if(e.key==="ArrowRight" || e.key.toLowerCase()==="d") keys.right=true;
-  if(e.key===" " || e.key==="ArrowUp" || e.key.toLowerCase()==="w") {
-    if(!keys.jump) jumpBuffer=9;
+  if(e.key==="ArrowLeft"||e.key.toLowerCase()==="a")keys.left=true;
+  if(e.key==="ArrowRight"||e.key.toLowerCase()==="d")keys.right=true;
+
+  if(e.key===" "||e.key==="ArrowUp"||e.key.toLowerCase()==="w") {
+    if(!keys.jump)jumpBuffer=9;
     keys.jump=true;
   }
 
-  if(e.key==="Enter" && gameState!=="playing") resetGame();
+  if(e.key==="Enter"&&gameState!=="playing")resetGame();
 });
 
 document.addEventListener("keyup",e=>{
-  if(e.key==="ArrowLeft" || e.key.toLowerCase()==="a") keys.left=false;
-  if(e.key==="ArrowRight" || e.key.toLowerCase()==="d") keys.right=false;
-  if(e.key===" " || e.key==="ArrowUp" || e.key.toLowerCase()==="w") keys.jump=false;
+  if(e.key==="ArrowLeft"||e.key.toLowerCase()==="a")keys.left=false;
+  if(e.key==="ArrowRight"||e.key.toLowerCase()==="d")keys.right=false;
+
+  if(e.key===" "||e.key==="ArrowUp"||e.key.toLowerCase()==="w") {
+    keys.jump=false;
+  }
 });
 
-// Mobile buttons
+// MOBILE CONTROLS
+
 function bindButton(id,key) {
   const button=document.getElementById(id);
 
@@ -667,6 +801,7 @@ function bindButton(id,key) {
 
   button.addEventListener("pointerup",release);
   button.addEventListener("pointercancel",release);
+
   button.addEventListener("lostpointercapture",()=>{
     keys[key]=false;
     button.classList.remove("pressed");
@@ -681,7 +816,7 @@ document.getElementById("restart").addEventListener("click",resetGame);
 
 resetGame();
 loop();
-</script>
 
+</script>
 </body>
 </html>
