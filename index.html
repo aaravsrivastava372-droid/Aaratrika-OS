@@ -369,34 +369,26 @@ body{
  .task-item{padding:6px 8px}
 }
  
-/* RAND.exe */
 .rand-app {
   color: #45365d;
   font-family: "Trebuchet MS", sans-serif;
 }
 
 .rand-header {
-  background: linear-gradient(120deg, #f5c6ed, #d9c9ff);
-  padding: 18px;
+  background: linear-gradient(120deg,#f5c6ed,#d9c9ff);
+  padding: 16px;
   border-radius: 12px;
   text-align: center;
   margin-bottom: 14px;
 }
 
-.rand-header h2 {
-  margin: 0;
-  font-size: 25px;
-}
-
-.rand-header p {
-  margin: 6px 0 0;
-  font-size: 12px;
-}
+.rand-header h2 { margin: 0; font-size: 25px; }
+.rand-header p { margin: 6px 0; font-size: 12px; }
 
 .rand-tabs {
   display: flex;
-  gap: 7px;
   flex-wrap: wrap;
+  gap: 7px;
   margin-bottom: 14px;
 }
 
@@ -406,14 +398,14 @@ body{
   background: #f9eafa;
   color: #68477c;
   border-radius: 9px;
-  padding: 9px 12px;
+  padding: 10px 12px;
   cursor: pointer;
   font-weight: bold;
-  font-size: 12px;
 }
 
-.rand-tabs button.active {
-  background: #bd8bd4;
+.rand-tabs button.active,
+.rand-action {
+  background: #b783d1;
   color: white;
 }
 
@@ -424,6 +416,8 @@ body{
   padding: 16px;
   min-height: 190px;
 }
+
+.rand-panel[hidden] { display: none !important; }
 
 .rand-quote {
   background: white;
@@ -436,6 +430,7 @@ body{
   display: flex;
   flex-direction: column;
   justify-content: center;
+  overflow-wrap: anywhere;
 }
 
 .rand-quote strong {
@@ -446,19 +441,6 @@ body{
 .rand-quote small {
   color: #a58aa9;
   margin-top: 9px;
-}
-
-.rand-action {
-  background: #b783d1;
-  color: white;
-  border: none;
-  padding: 11px 15px;
-}
-
-.rand-action:hover,
-.rand-tabs button:hover {
-  filter: brightness(0.96);
-  transform: translateY(-1px);
 }
 
 .rand-input {
@@ -473,12 +455,6 @@ body{
   font: inherit;
 }
 
-.rand-status {
-  color: #a17baa;
-  font-size: 11px;
-  margin-top: 12px;
-}
-
 .rand-output {
   background: #f7eaff;
   padding: 13px;
@@ -488,17 +464,12 @@ body{
   overflow-wrap: anywhere;
 }
 
-.rand-stamp {
-  display: inline-block;
-  background: #f1d8f5;
-  color: #80528f;
-  border-radius: 20px;
-  padding: 5px 9px;
-  font-size: 10px;
-  font-weight: bold;
-  margin-bottom: 8px;
- }
-  
+.rand-status {
+  color: #a17baa;
+  font-size: 11px;
+  margin-top: 12px;
+}
+ 
 </style>
 </head>
 
@@ -567,77 +538,81 @@ body{
 
  <!-- APPLICATION WINDOWS -->
 
- <div class="window" id="rand">
-  
-<div class="window-title">
-  <span>💗 RAND.exe — Aaratrika Language Services</span>
+<div class="window" id="rand">
+  <div class="window-header" onpointerdown="startDrag(event,this.parentElement)">
+    <span>💗 RAND.exe — Aaratrika Language Services</span>
+    <div class="window-controls">
+      <button onclick="minimizeApp('rand')">_</button>
+      <button onclick="maximizeApp('rand')">□</button>
+      <button onclick="closeApp('rand')">×</button>
+    </div>
+  </div>
+
+  <div class="window-content rand-app">
+
+    <div class="rand-header">
+      <h2>RAND.exe 💗</h2>
+      <p>Advanced Aaratrika-to-Human Translation Software</p>
+      <small>VERSION 18.0 • VERY UNSTABLE</small>
+    </div>
+
+    <div class="rand-tabs">
+      <button class="active" onclick="RandApp.tab('quotes',this)">💬 Quotes</button>
+      <button onclick="RandApp.tab('translator',this)">🔠 Translator</button>
+      <button onclick="RandApp.tab('daily',this)">🎲 Daily RAND</button>
+    </div>
+
+    <section class="rand-panel" id="rand-quotes">
+      <h3>💬 The Aaratrika Quote Machine</h3>
+      <p>Generate a certified Aaratrika quote.</p>
+
+      <div class="rand-quote">
+        <strong id="rand-quote-text">Click below. You aren't ready.</strong>
+        <small id="rand-quote-label">Awaiting instructions...</small>
+      </div>
+
+      <button class="rand-action" onclick="RandApp.generate()">
+        GENERATE QUOTE ✨
+      </button>
+    </section>
+
+    <section class="rand-panel" id="rand-translator" hidden>
+      <h3>🔠 RAND Translator</h3>
+      <p>Convert ordinary human sentences into Aaratrika language.</p>
+
+      <input id="rand-input" class="rand-input"
+        placeholder="e.g. I am going to sleep...">
+
+      <button class="rand-action" onclick="RandApp.translate()">
+        TRANSLATE
+      </button>
+
+      <div class="rand-output" id="rand-translation">
+        Translation will appear here.
+      </div>
+    </section>
+
+    <section class="rand-panel" id="rand-daily" hidden>
+      <h3>🎲 Daily Dose of RAND</h3>
+      <p>Your daily reminder that normal conversations are overrated.</p>
+
+      <div class="rand-quote">
+        <strong id="rand-daily-text">RAND is loading...</strong>
+        <small>Official Aaratrika Archives</small>
+      </div>
+
+      <button class="rand-action" onclick="RandApp.daily()">
+        ANOTHER ONE
+      </button>
+    </section>
+
+    <p class="rand-status" id="rand-status">
+      SYSTEM STATUS: Aaratrika has not been contained.
+    </p>
+
+  </div>
 </div>
-
-<div class="window-content rand-app">
-
-  <div class="rand-header">
-    <h2>RAND.exe 💗</h2>
-    <p>Advanced Aaratrika-to-Human Translation Software</p>
-    <span class="rand-stamp">VERSION 18.0 • VERY UNSTABLE</span>
-  </div>
-
-  <div class="rand-tabs">
-    <button class="active" onclick="randTab('quotes',this)">💬 Quote Generator</button>
-    <button onclick="randTab('translator',this)">🔠 Translator</button>
-    <button onclick="randTab('daily',this)">🎲 Daily RAND</button>
-  </div>
-
-  <div class="rand-panel" id="rand-quotes">
-    <h3>💬 The Aaratrika Quote Machine</h3>
-    <p>Feeling emotionally unprepared? Generate a certified Aaratrika quote.</p>
-
-    <div class="rand-quote">
-      <strong id="rand-quote-text">Click the button. You aren't ready.</strong>
-      <small id="rand-quote-label">Awaiting instructions...</small>
-    </div>
-
-    <button class="rand-action" onclick="generateRandQuote()">
-  GENERATE QUOTE ✨
-    </button>
-  </div>
-
-  <div class="rand-panel" id="rand-translator" style="display:none">
-    <h3>🔠 RAND Translator</h3>
-    <p>Enter a normal human sentence. Our advanced AI will attempt to Aaratratika-fy it.</p>
-
-    <input class="rand-input" id="rand-input"
-      placeholder="e.g. I am going to sleep...">
-
-    <button class="rand-action" onclick="translateRand()">
-      TRANSLATE
-    </button>
-
-    <div class="rand-output" id="rand-translation">
-      Translation will appear here.
-    </div>
-  </div>
-
-  <div class="rand-panel" id="rand-daily" style="display:none">
-    <h3>🎲 Daily Dose of RAND</h3>
-    <p>Your daily reminder that normal conversations are overrated.</p>
-
-    <div class="rand-quote">
-      <strong id="rand-daily-text">RAND is loading...</strong>
-      <small>Official Aaratrika Archives</small>
-    </div>
-
-    <button class="rand-action" onclick="generateDailyRand()">
-      ANOTHER ONE
-    </button>
-  </div>
-
-  <p class="rand-status" id="rand-status">
-    SYSTEM STATUS: Aaratrika has not been contained.
-  </p>
-
-</div>
-  
- </div>
+ 
 
  <div class="window" id="garlic">
   <div class="titlebar">
@@ -883,114 +858,117 @@ setTimeout(()=>{
  const n=notifications[Math.floor(Math.random()*notifications.length)];
  showToast(n[0],n[1]);
 },5000);
-/* ===== AARATRIKA OS: RAND.exe ===== */
 
-window.aaratrikaQuotes = [
-  ["Ham apne bacche kaise palenge", "FUTURE PLANNING DEPARTMENT"],
-  ["Mera kutta tumhe kha jayega", "THREAT DETECTION SYSTEM"],
-  ["Periods pain hei toh paani peelo", "MEDICAL ADVICE.exe"],
-  ["Ek jhaapad marungi na", "ANGER MANAGEMENT DIVISION"],
-  ["12th khatam hone se pehle Mera dehant na ho jaye", "ACADEMIC SURVIVAL PROTOCOL"],
-  ["Are yawr aap na so jao", "SLEEP PREVENTION SYSTEM"],
-  ["Ro mat", "EMOTIONAL SUPPORT SERVICES"],
-  ["Ouuu shiiii", "UNIVERSAL ERROR SOUND"],
-  ["Apka naya bf banega jab toh usse mangna", "BOYFRIEND REPLACEMENT WARNING"],
-  ["Loru", "THE CLASSIC"]
-];
+/* ===== RAND.exe: INDEPENDENT APPLICATION ===== */
 
-window.lastRandQuote = -1;
+window.RandApp = (() => {
 
-window.randTab = function(tab, button) {
-  const names = ["quotes", "translator", "daily"];
+  const quotes = [
+    ["Ham apne bacche kaise palenge", "FUTURE PLANNING DEPARTMENT"],
+    ["Mera kutta tumhe kha jayega", "THREAT DETECTION SYSTEM"],
+    ["Periods pain hei toh paani peelo", "MEDICAL ADVICE.exe"],
+    ["Ek jhaapad marungi na", "ANGER MANAGEMENT DIVISION"],
+    ["12th khatam hone se pehle Mera dehant na ho jaye", "ACADEMIC SURVIVAL PROTOCOL"],
+    ["Are yawr aap na so jao", "SLEEP PREVENTION SYSTEM"],
+    ["Ro mat", "EMOTIONAL SUPPORT SERVICES"],
+    ["Ouuu shiiii", "UNIVERSAL ERROR SOUND"],
+    ["Apka naya bf banega jab toh usse mangna", "BOYFRIEND REPLACEMENT WARNING"],
+    ["Loru", "THE CLASSIC"]
+  ];
 
-  names.forEach(name => {
-    const panel = document.getElementById("rand-" + name);
-    if (panel) {
-      panel.style.display = name === tab ? "block" : "none";
+  let previous = -1;
+
+  function randomQuote() {
+    let index = Math.floor(Math.random() * quotes.length);
+
+    while (index === previous && quotes.length > 1) {
+      index = Math.floor(Math.random() * quotes.length);
     }
-  });
 
-  document.querySelectorAll(".rand-tabs button").forEach(btn => {
-    btn.classList.remove("active");
-  });
+    previous = index;
+    return quotes[index];
+  }
 
-  if (button) button.classList.add("active");
-};
+  function tab(name, button) {
+    ["quotes", "translator", "daily"].forEach(id => {
+      const panel = document.getElementById("rand-" + id);
+      panel.hidden = id !== name;
+    });
 
-window.getRandomQuote = function() {
-  let index = Math.floor(Math.random() * window.aaratrikaQuotes.length);
+    document.querySelectorAll(".rand-tabs button").forEach(btn => {
+      btn.classList.remove("active");
+    });
 
-  if (window.aaratrikaQuotes.length > 1) {
-    while (index === window.lastRandQuote) {
-      index = Math.floor(Math.random() * window.aaratrikaQuotes.length);
+    button.classList.add("active");
+  }
+
+  function generate() {
+    const quote = randomQuote();
+
+    document.getElementById("rand-quote-text").textContent =
+      '"' + quote[0] + '"';
+
+    document.getElementById("rand-quote-label").textContent =
+      quote[1];
+
+    status("QUOTE GENERATED. EMOTIONAL DAMAGE DETECTED.");
+  }
+
+  function daily() {
+    const quote = randomQuote();
+
+    document.getElementById("rand-daily-text").textContent =
+      '"' + quote[0] + '"';
+
+    status("DAILY RAND DELIVERED. PROCEED WITH CAUTION.");
+  }
+
+  function translate() {
+    const input = document.getElementById("rand-input")
+      .value.trim().toLowerCase();
+
+    const output = document.getElementById("rand-translation");
+
+    if (!input) {
+      output.textContent = "ERROR: ENTER A SENTENCE FIRST.";
+      return;
     }
+
+    let result;
+
+    if (input.includes("sleep") || input.includes("tired")) {
+      result = quotes[5][0];
+    } else if (input.includes("cry") || input.includes("sad")) {
+      result = quotes[6][0];
+    } else if (input.includes("future") || input.includes("children")) {
+      result = quotes[0][0];
+    } else if (input.includes("dog")) {
+      result = quotes[1][0];
+    } else if (input.includes("pain") || input.includes("hurt")) {
+      result = quotes[2][0];
+    } else if (input.includes("boyfriend") || input.includes("ex")) {
+      result = quotes[8][0];
+    } else if (input.includes("angry") || input.includes("annoy")) {
+      result = quotes[3][0];
+    } else {
+      result = randomQuote()[0];
+    }
+
+    output.textContent = "TRANSLATION: " + result;
+    status("TRANSLATION COMPLETE. ACCURACY QUESTIONABLE.");
   }
 
-  window.lastRandQuote = index;
-  return window.aaratrikaQuotes[index];
-};
-
-window.generateRandQuote = function() {
-  const quote = window.getRandomQuote();
-
-  document.getElementById("rand-quote-text").textContent =
-    '"' + quote[0] + '"';
-
-  document.getElementById("rand-quote-label").textContent =
-    quote[1];
-
-  document.getElementById("rand-status").textContent =
-    "QUOTE GENERATED. EMOTIONAL DAMAGE DETECTED.";
-};
-
-window.generateDailyRand = function() {
-  const quote = window.getRandomQuote();
-
-  document.getElementById("rand-daily-text").textContent =
-    '"' + quote[0] + '"';
-
-  document.getElementById("rand-status").textContent =
-    "DAILY RAND DELIVERED. PROCEED WITH CAUTION.";
-};
-
-window.translateRand = function() {
-  const input = document.getElementById("rand-input").value
-    .trim().toLowerCase();
-
-  const output = document.getElementById("rand-translation");
-
-  if (!input) {
-    output.textContent = "ERROR: ENTER A SENTENCE FIRST.";
-    return;
+  function status(message) {
+    document.getElementById("rand-status").textContent =
+      "SYSTEM STATUS: " + message;
   }
 
-  let result;
+  return { tab, generate, daily, translate };
 
-  if (input.includes("sleep") || input.includes("tired")) {
-    result = "Are yawr aap na so jao";
-  } else if (input.includes("cry") || input.includes("sad")) {
-    result = "Ro mat";
-  } else if (input.includes("future") || input.includes("children")) {
-    result = "Ham apne bacche kaise palenge";
-  } else if (input.includes("dog")) {
-    result = "Mera kutta tumhe kha jayega";
-  } else if (input.includes("pain") || input.includes("hurt")) {
-    result = "Periods pain hei toh paani peelo";
-  } else if (input.includes("boyfriend") || input.includes("ex")) {
-    result = "Apka naya bf banega jab toh usse mangna";
-  } else if (input.includes("angry") || input.includes("annoy")) {
-    result = "Ek jhaapad marungi na";
-  } else {
-    result = window.getRandomQuote()[0];
-  }
+})();
 
-  output.textContent = "TRANSLATION: " + result;
-
-  document.getElementById("rand-status").textContent =
-    "TRANSLATION COMPLETE. ACCURACY QUESTIONABLE.";
-};
-
-console.log("RAND.exe successfully loaded!");
+console.log("RAND.exe loaded successfully.");
+ 
 </script>
 </body>
                                                      </html>
