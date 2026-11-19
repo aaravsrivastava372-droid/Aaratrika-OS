@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AARATRIKA OS 18.0</title>
+<title>AARATRIKA OS 19.11</title>
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=VT323&family=Nunito:wght@400;600;700;800&display=swap');
@@ -368,6 +368,137 @@ body{
  }
  .task-item{padding:6px 8px}
 }
+ 
+/* RAND.exe */
+.rand-app {
+  color: #45365d;
+  font-family: "Trebuchet MS", sans-serif;
+}
+
+.rand-header {
+  background: linear-gradient(120deg, #f5c6ed, #d9c9ff);
+  padding: 18px;
+  border-radius: 12px;
+  text-align: center;
+  margin-bottom: 14px;
+}
+
+.rand-header h2 {
+  margin: 0;
+  font-size: 25px;
+}
+
+.rand-header p {
+  margin: 6px 0 0;
+  font-size: 12px;
+}
+
+.rand-tabs {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.rand-tabs button,
+.rand-action {
+  border: 1px solid #c9a8dc;
+  background: #f9eafa;
+  color: #68477c;
+  border-radius: 9px;
+  padding: 9px 12px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 12px;
+}
+
+.rand-tabs button.active {
+  background: #bd8bd4;
+  color: white;
+}
+
+.rand-panel {
+  background: #fff9ff;
+  border: 1px solid #ead6f0;
+  border-radius: 12px;
+  padding: 16px;
+  min-height: 190px;
+}
+
+.rand-quote {
+  background: white;
+  border: 2px dashed #d6b2e5;
+  border-radius: 12px;
+  padding: 20px 12px;
+  text-align: center;
+  margin: 14px 0;
+  min-height: 65px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.rand-quote strong {
+  font-size: 19px;
+  color: #8a559f;
+}
+
+.rand-quote small {
+  color: #a58aa9;
+  margin-top: 9px;
+}
+
+.rand-action {
+  background: #b783d1;
+  color: white;
+  border: none;
+  padding: 11px 15px;
+}
+
+.rand-action:hover,
+.rand-tabs button:hover {
+  filter: brightness(0.96);
+  transform: translateY(-1px);
+}
+
+.rand-input {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 11px;
+  border: 1px solid #d8bce5;
+  border-radius: 9px;
+  background: white;
+  color: #45365d;
+  margin: 10px 0;
+  font: inherit;
+}
+
+.rand-status {
+  color: #a17baa;
+  font-size: 11px;
+  margin-top: 12px;
+}
+
+.rand-output {
+  background: #f7eaff;
+  padding: 13px;
+  border-radius: 9px;
+  margin-top: 12px;
+  min-height: 24px;
+  overflow-wrap: anywhere;
+}
+
+.rand-stamp {
+  display: inline-block;
+  background: #f1d8f5;
+  color: #80528f;
+  border-radius: 20px;
+  padding: 5px 9px;
+  font-size: 10px;
+  font-weight: bold;
+  margin-bottom: 8px;
+ }
+  
 </style>
 </head>
 
@@ -437,21 +568,75 @@ body{
  <!-- APPLICATION WINDOWS -->
 
  <div class="window" id="rand">
-  <div class="titlebar">
-   💗 RAND.exe
-   <div class="window-buttons">
-    <button onclick="minimizeApp('rand')">_</button>
-    <button onclick="maximizeApp('rand')">□</button>
-    <button onclick="closeApp('rand')">×</button>
-   </div>
+  
+<div class="window-title">
+  <span>💗 RAND.exe — Aaratrika Language Services</span>
+</div>
+
+<div class="window-content rand-app">
+
+  <div class="rand-header">
+    <h2>RAND.exe 💗</h2>
+    <p>Advanced Aaratrika-to-Human Translation Software</p>
+    <span class="rand-stamp">VERSION 18.0 • VERY UNSTABLE</span>
   </div>
-  <div class="window-content">
-   <h2>Welcome, Aaratrika!</h2>
-   <p>RAND.exe has successfully launched.</p>
-   <p>Loading an unreasonable amount of affection...</p>
-   <p><strong>Status:</strong> Someone is thinking about you. Again.</p>
-   <button onclick="showToast('RAND.exe','You are legally required to have a good day.')">Check status</button>
+
+  <div class="rand-tabs">
+    <button class="active" onclick="randTab('quotes',this)">💬 Quote Generator</button>
+    <button onclick="randTab('translator',this)">🔠 Translator</button>
+    <button onclick="randTab('daily',this)">🎲 Daily RAND</button>
   </div>
+
+  <div class="rand-panel" id="rand-quotes">
+    <h3>💬 The Aaratrika Quote Machine</h3>
+    <p>Feeling emotionally unprepared? Generate a certified Aaratrika quote.</p>
+
+    <div class="rand-quote">
+      <strong id="rand-quote-text">Click the button. You aren't ready.</strong>
+      <small id="rand-quote-label">Awaiting instructions...</small>
+    </div>
+
+    <button class="rand-action" onclick="generateRandQuote()">
+      GENERATE QUOTE ✨
+    </button>
+  </div>
+
+  <div class="rand-panel" id="rand-translator" style="display:none">
+    <h3>🔠 RAND Translator</h3>
+    <p>Enter a normal human sentence. Our advanced AI will attempt to Aaratratika-fy it.</p>
+
+    <input class="rand-input" id="rand-input"
+      placeholder="e.g. I am going to sleep...">
+
+    <button class="rand-action" onclick="translateRand()">
+      TRANSLATE
+    </button>
+
+    <div class="rand-output" id="rand-translation">
+      Translation will appear here.
+    </div>
+  </div>
+
+  <div class="rand-panel" id="rand-daily" style="display:none">
+    <h3>🎲 Daily Dose of RAND</h3>
+    <p>Your daily reminder that normal conversations are overrated.</p>
+
+    <div class="rand-quote">
+      <strong id="rand-daily-text">RAND is loading...</strong>
+      <small>Official Aaratrika Archives</small>
+    </div>
+
+    <button class="rand-action" onclick="generateDailyRand()">
+      ANOTHER ONE
+    </button>
+  </div>
+
+  <p class="rand-status" id="rand-status">
+    SYSTEM STATUS: Aaratrika has not been contained.
+  </p>
+
+</div>
+  
  </div>
 
  <div class="window" id="garlic">
