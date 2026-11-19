@@ -3,973 +3,685 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AARATRIKA OS 18.11</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Haunted Hollow</title>
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=VT323&family=Nunito:wght@400;600;700;800&display=swap');
-
-:root{
- --pink:#f5b8d7;
- --purple:#b8a5ed;
- --dark:#302849;
- --window:#fff4fb;
- --border:#8e79ae;
- --text:#423653;
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-*{box-sizing:border-box}
-
-body{
- margin:0;
- height:100vh;
- overflow:hidden;
- font-family:'Nunito',sans-serif;
- color:var(--text);
- background:#4d456d;
- user-select:none;
-}
-
-/* DESKTOP WALLPAPER */
-
-.desktop{
- position:fixed;
- inset:0;
- overflow:hidden;
- background:
- radial-gradient(ellipse at 15% 15%,#f4c7df88,transparent 35%),
- radial-gradient(ellipse at 85% 80%,#a89ae988,transparent 40%),
- linear-gradient(135deg,#7773a5,#b9a0cf 50%,#e6b9d1);
-}
-
-.desktop:before{
- content:"";
- position:absolute;
- inset:0;
- background-image:
- radial-gradient(#ffffffaa 1px,transparent 1px);
- background-size:35px 35px;
- opacity:.35;
- pointer-events:none;
-}
-
-.wallpaper-title{
- position:absolute;
- right:7%;
- top:12%;
- text-align:right;
- color:white;
- text-shadow:0 3px 15px #44345b77;
- pointer-events:none;
-}
-
-.wallpaper-title h1{
- font-size:clamp(30px,6vw,65px);
- margin:0;
- letter-spacing:3px;
-}
-
-.wallpaper-title p{
- margin:4px 0;
- font-size:15px;
- letter-spacing:4px;
-}
-
-/* DESKTOP ICONS */
-
-.icons{
- position:absolute;
- top:18px;
- left:15px;
- display:flex;
- flex-direction:column;
- gap:15px;
- z-index:2;
-}
-
-.desktop-icon{
- width:83px;
- min-height:83px;
- display:flex;
- flex-direction:column;
- align-items:center;
- justify-content:center;
- gap:5px;
- color:white;
- text-shadow:1px 2px 4px #34264d;
- cursor:pointer;
- border:1px solid transparent;
- border-radius:5px;
- text-align:center;
- font-size:12px;
- padding:5px;
-}
-
-.desktop-icon:hover,
-.desktop-icon:focus{
- background:#ffffff35;
- border:1px solid #ffffff75;
- outline:none;
-}
-
-.desktop-icon .emoji{font-size:34px}
-.desktop-icon span:last-child{max-width:80px}
-
-/* TASKBAR */
-
-.taskbar{
- position:absolute;
- bottom:0;
- left:0;
- right:0;
- height:48px;
- background:linear-gradient(#fff2fa,#e7d6f0);
- border-top:2px solid white;
- box-shadow:0 -3px 12px #42365333;
- display:flex;
- align-items:center;
- padding:4px 7px;
- gap:7px;
- z-index:1000;
-}
-
-.start-button{
- height:37px;
- padding:0 14px;
- border:2px outset white;
- border-radius:4px;
- background:linear-gradient(135deg,#f7c6df,#c8b4ef);
- color:#423653;
- font-weight:800;
- cursor:pointer;
-}
-
-.start-button:active{border-style:inset}
-
-.task-items{
- display:flex;
- flex:1;
- gap:5px;
- overflow:hidden;
-}
-
-.task-item{
- background:#ffffff75;
- border:1px solid #ad96c5;
- padding:7px 12px;
- border-radius:4px;
- font-size:12px;
- cursor:pointer;
- white-space:nowrap;
-}
-
-.task-item.active{background:#d9c5eb}
-
-.clock{
- border:2px inset white;
- padding:6px 9px;
- border-radius:3px;
- font-size:12px;
- white-space:nowrap;
-}
-
-/* START MENU */
-
-.start-menu{
- display:none;
- position:absolute;
- bottom:48px;
- left:5px;
- width:260px;
- background:#fff5fb;
- border:2px solid #a68dbb;
- box-shadow:4px 4px 15px #30284966;
- z-index:1001;
- border-radius:5px 5px 0 0;
- overflow:hidden;
-}
-
-.start-menu.show{display:block}
-
-.start-banner{
- background:linear-gradient(135deg,#d6b4e8,#f2c1d9);
- padding:17px;
- font-weight:800;
- font-size:20px;
-}
-
-.start-banner small{
- display:block;
- font-size:11px;
- font-weight:600;
- margin-top:3px;
-}
-
-.start-option{
- padding:12px 15px;
- cursor:pointer;
- display:flex;
- gap:12px;
- align-items:center;
- font-size:14px;
-}
-
-.start-option:hover{background:#eedcf5}
-
-/* APPLICATION WINDOWS */
-
-.window{
- position:absolute;
- width:min(440px,calc(100vw - 25px));
- max-height:calc(100vh - 75px);
- background:var(--window);
- border:2px solid #fff;
- outline:1px solid var(--border);
- box-shadow:6px 8px 25px #30284966;
- border-radius:6px;
- display:none;
- flex-direction:column;
- z-index:20;
- overflow:hidden;
-}
-
-.window.open{display:flex}
-
-.titlebar{
- background:linear-gradient(90deg,#a18bcf,#e8b7d5);
- color:white;
- height:36px;
- display:flex;
- justify-content:space-between;
- align-items:center;
- padding:4px 7px 4px 12px;
- font-size:13px;
- font-weight:800;
- cursor:grab;
- flex-shrink:0;
-}
-
-.titlebar:active{cursor:grabbing}
-
-.window-buttons{display:flex;gap:4px}
-
-.window-buttons button{
- width:24px;
- height:23px;
- border:1px solid white;
- background:#fceaf6;
- color:#514265;
- border-radius:3px;
- cursor:pointer;
- font-weight:bold;
-}
-
-.window-content{
- padding:20px;
- overflow-y:auto;
- font-size:14px;
- line-height:1.6;
-}
-
-.window-content h2{
- margin:0 0 8px;
- color:#8265a5;
-}
-
-.window-content button{
- border:1px solid #a48cb9;
- background:#f0d8eb;
- color:#493958;
- padding:8px 13px;
- border-radius:4px;
- cursor:pointer;
- font-family:inherit;
- font-weight:700;
-}
-
-.window-content button:hover{background:#e5c7e5}
-
-.window.maximized{
- width:calc(100vw - 12px)!important;
- height:calc(100vh - 60px)!important;
- top:5px!important;
- left:6px!important;
-}
-
-/* NOTIFICATIONS */
-
-.toast{
- position:absolute;
- bottom:60px;
- right:15px;
- width:min(290px,calc(100vw - 30px));
- padding:14px;
- background:#fff5fb;
- border:2px solid #b69bc9;
- border-radius:8px;
- box-shadow:0 5px 20px #30284955;
- z-index:1100;
- animation:toastIn .4s ease;
- display:none;
- font-size:13px;
-}
-
-.toast.show{display:block}
-
-@keyframes toastIn{
- from{transform:translateX(40px);opacity:0}
- to{transform:translateX(0);opacity:1}
-}
-
-.toast strong{color:#8b6ba8}
-
-/* SHUTDOWN SCREEN */
-
-.shutdown{
- position:fixed;
- inset:0;
- z-index:2000;
- background:#242039;
- color:#f6d7ec;
- display:none;
- align-items:center;
- justify-content:center;
- flex-direction:column;
- text-align:center;
-}
-
-.shutdown.show{display:flex}
-
-.shutdown h1{
- font-family:'VT323',monospace;
- font-size:55px;
- font-weight:400;
-}
-
-/* MOBILE */
-
-@media(max-width:600px){
- .wallpaper-title{
-  top:12%;
-  right:6%;
- }
- .wallpaper-title h1{font-size:34px}
- .icons{top:12px;left:7px;gap:8px}
- .desktop-icon{width:72px;min-height:72px}
- .desktop-icon .emoji{font-size:29px}
- .window{
-  left:50%!important;
-  top:50%!important;
-  transform:translate(-50%,-50%);
-  max-height:calc(100vh - 80px);
- }
- .window.maximized{
-  transform:none;
- }
- .task-item{padding:6px 8px}
-}
- 
-.rand-app {
-  color: #45365d;
-  font-family: "Trebuchet MS", sans-serif;
-}
-
-.rand-header {
-  background: linear-gradient(120deg,#f5c6ed,#d9c9ff);
-  padding: 16px;
-  border-radius: 12px;
+body {
+  background: #100d1b;
+  color: #eee8ff;
+  font-family: monospace;
+  overflow-x: hidden;
   text-align: center;
-  margin-bottom: 14px;
+  touch-action: none;
 }
 
-.rand-header h2 { margin: 0; font-size: 25px; }
-.rand-header p { margin: 6px 0; font-size: 12px; }
+header {
+  padding: 16px 8px 10px;
+}
 
-.rand-tabs {
+h1 {
+  color: #c7a5ff;
+  font-size: clamp(23px, 5vw, 38px);
+  letter-spacing: 4px;
+  text-shadow: 3px 3px #593b7c;
+}
+
+.subtitle {
+  color: #a99abf;
+  font-size: 12px;
+  margin-top: 7px;
+}
+
+#game-wrap {
+  width: min(960px, 100%);
+  margin: 12px auto;
+  padding: 0 8px;
+}
+
+#game {
+  width: 100%;
+  display: block;
+  aspect-ratio: 16 / 9;
+  background: #171329;
+  border: 4px solid #60477f;
+  border-radius: 5px;
+  image-rendering: pixelated;
+}
+
+#instructions {
+  color: #b6a8ca;
+  font-size: 12px;
+  line-height: 1.8;
+  margin: 10px auto;
+  padding: 0 12px;
+}
+
+#controls {
   display: flex;
-  flex-wrap: wrap;
-  gap: 7px;
-  margin-bottom: 14px;
+  justify-content: space-between;
+  align-items: center;
+  width: min(520px, 100%);
+  margin: 14px auto 20px;
+  padding: 0 12px;
+  touch-action: none;
 }
 
-.rand-tabs button,
-.rand-action {
-  border: 1px solid #c9a8dc;
-  background: #f9eafa;
-  color: #68477c;
-  border-radius: 9px;
-  padding: 10px 12px;
-  cursor: pointer;
+.control-group {
+  display: flex;
+  gap: 12px;
+}
+
+.control {
+  width: 66px;
+  height: 62px;
+  border: 2px solid #9272b8;
+  border-radius: 12px;
+  background: #302344;
+  color: white;
+  font-size: 26px;
+  font-family: monospace;
+  box-shadow: 0 4px #171020;
+  touch-action: none;
+  user-select: none;
+}
+
+.control:active,
+.control.pressed {
+  background: #76549b;
+  transform: translateY(3px);
+  box-shadow: 0 1px #171020;
+}
+
+.jump {
+  width: 90px;
+  background: #553d76;
+  font-size: 14px;
   font-weight: bold;
 }
 
-.rand-tabs button.active,
-.rand-action {
-  background: #b783d1;
+#restart {
+  background: #51376d;
   color: white;
+  border: 1px solid #b99cdb;
+  border-radius: 6px;
+  padding: 10px 20px;
+  font-family: monospace;
+  margin-bottom: 20px;
+  cursor: pointer;
 }
 
-.rand-panel {
-  background: #fff9ff;
-  border: 1px solid #ead6f0;
-  border-radius: 12px;
-  padding: 16px;
-  min-height: 190px;
+footer {
+  font-size: 10px;
+  color: #756887;
+  padding: 8px;
 }
-
-.rand-panel[hidden] { display: none !important; }
-
-.rand-quote {
-  background: white;
-  border: 2px dashed #d6b2e5;
-  border-radius: 12px;
-  padding: 20px 12px;
-  text-align: center;
-  margin: 14px 0;
-  min-height: 65px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  overflow-wrap: anywhere;
-}
-
-.rand-quote strong {
-  font-size: 19px;
-  color: #8a559f;
-}
-
-.rand-quote small {
-  color: #a58aa9;
-  margin-top: 9px;
-}
-
-.rand-input {
-  box-sizing: border-box;
-  width: 100%;
-  padding: 11px;
-  border: 1px solid #d8bce5;
-  border-radius: 9px;
-  background: white;
-  color: #45365d;
-  margin: 10px 0;
-  font: inherit;
-}
-
-.rand-output {
-  background: #f7eaff;
-  padding: 13px;
-  border-radius: 9px;
-  margin-top: 12px;
-  min-height: 24px;
-  overflow-wrap: anywhere;
-}
-
-.rand-status {
-  color: #a17baa;
-  font-size: 11px;
-  margin-top: 12px;
-}
- 
 </style>
 </head>
 
 <body>
 
-<div class="desktop" id="desktop">
+<header>
+  <h1>HAUNTED HOLLOW</h1>
+  <div class="subtitle">WORLD 1: THE FORGOTTEN WOODS</div>
+</header>
 
- <div class="wallpaper-title">
-  <h1>AARATRIKA OS</h1>
-  <p>VERSION 18.0</p>
-  <p>THE WORLD IS YOURS.</p>
- </div>
-
- <!-- DESKTOP ICONS -->
-
- <div class="icons">
-
-  <div class="desktop-icon" onclick="openApp('rand')">
-   <span class="emoji">💗</span>
-   <span>RAND.exe</span>
-  </div>
-
-  <div class="desktop-icon" onclick="openApp('garlic')">
-   <span class="emoji">🍞</span>
-   <span>Garlic Bread</span>
-  </div>
-
-  <div class="desktop-icon" onclick="openApp('psych')">
-   <span class="emoji">🧠</span>
-   <span>Psychology Lab</span>
-  </div>
-
-  <div class="desktop-icon" onclick="openApp('boyfriend')">
-   <span class="emoji">📊</span>
-   <span>Boyfriend.exe</span>
-  </div>
-
-  <div class="desktop-icon" onclick="openApp('achievements')">
-   <span class="emoji">🏆</span>
-   <span>Achievements</span>
-  </div>
-
-  <div class="desktop-icon" onclick="openApp('recycle')">
-   <span class="emoji">🗑️</span>
-   <span>Recycle Bin</span>
-  </div>
-
- </div>
-
- <!-- START MENU -->
-
- <div class="start-menu" id="startMenu">
-  <div class="start-banner">
-   AARATRIKA OS
-   <small>Personal Computer • User 001</small>
-  </div>
-
-  <div class="start-option" onclick="openApp('rand')">💗 RAND.exe</div>
-  <div class="start-option" onclick="openApp('garlic')">🍞 Garlic Bread Simulator</div>
-  <div class="start-option" onclick="openApp('psych')">🧠 Psychology Lab</div>
-  <div class="start-option" onclick="openApp('boyfriend')">📊 Boyfriend.exe</div>
-  <div class="start-option" onclick="openApp('achievements')">🏆 Achievements</div>
-  <div class="start-option" onclick="openApp('recycle')">🗑️ Recycle Bin</div>
-  <div class="start-option" onclick="shutdown()">⏻ Shut down</div>
- </div>
-
- <!-- APPLICATION WINDOWS -->
-
-<div class="window" id="rand">
-  <div class="window-header" onpointerdown="startDrag(event,this.parentElement)">
-    <span>💗 RAND.exe — Aaratrika Language Services</span>
-    <div class="window-controls">
-      <button onclick="minimizeApp('rand')">_</button>
-      <button onclick="maximizeApp('rand')">□</button>
-      <button onclick="closeApp('rand')">×</button>
-    </div>
-  </div>
-
-  <div class="window-content rand-app">
-
-    <div class="rand-header">
-      <h2>RAND.exe 💗</h2>
-      <p>Advanced Aaratrika-to-Human Translation Software</p>
-      <small>VERSION 18.0 • VERY UNSTABLE</small>
-    </div>
-
-    <div class="rand-tabs">
-      <button class="active" onclick="RandApp.tab('quotes',this)">💬 Quotes</button>
-      <button onclick="RandApp.tab('translator',this)">🔠 Translator</button>
-      <button onclick="RandApp.tab('daily',this)">🎲 Daily RAND</button>
-    </div>
-
-    <section class="rand-panel" id="rand-quotes">
-      <h3>💬 The Aaratrika Quote Machine</h3>
-      <p>Generate a certified Aaratrika quote.</p>
-
-      <div class="rand-quote">
-        <strong id="rand-quote-text">Click below. You aren't ready.</strong>
-        <small id="rand-quote-label">Awaiting instructions...</small>
-      </div>
-
-      <button class="rand-action" onclick="RandApp.generate()">
-        GENERATE QUOTE ✨
-      </button>
-    </section>
-
-    <section class="rand-panel" id="rand-translator" hidden>
-      <h3>🔠 RAND Translator</h3>
-      <p>Convert ordinary human sentences into Aaratrika language.</p>
-
-      <input id="rand-input" class="rand-input"
-        placeholder="e.g. I am going to sleep...">
-
-      <button class="rand-action" onclick="RandApp.translate()">
-        TRANSLATE
-      </button>
-
-      <div class="rand-output" id="rand-translation">
-        Translation will appear here.
-      </div>
-    </section>
-
-    <section class="rand-panel" id="rand-daily" hidden>
-      <h3>🎲 Daily Dose of RAND</h3>
-      <p>Your daily reminder that normal conversations are overrated.</p>
-
-      <div class="rand-quote">
-        <strong id="rand-daily-text">RAND is loading...</strong>
-        <small>Official Aaratrika Archives</small>
-      </div>
-
-      <button class="rand-action" onclick="RandApp.daily()">
-        ANOTHER ONE
-      </button>
-    </section>
-
-    <p class="rand-status" id="rand-status">
-      SYSTEM STATUS: Aaratrika has not been contained.
-    </p>
-
-  </div>
-</div>
- 
-
- <div class="window" id="garlic">
-  <div class="titlebar">
-   🍞 Garlic Bread Simulator
-   <div class="window-buttons">
-    <button onclick="minimizeApp('garlic')">_</button>
-    <button onclick="maximizeApp('garlic')">□</button>
-    <button onclick="closeApp('garlic')">×</button>
-   </div>
-  </div>
-  <div class="window-content">
-   <h2>Garlic Bread Simulator</h2>
-   <p>Welcome to the most important application on this computer.</p>
-   <p>Garlic bread appreciation level: <strong>INFINITE</strong></p>
-   <button onclick="showToast('GARLIC BREAD','Aunty has been notified of your arrival.')">Appreciate garlic bread</button>
-  </div>
- </div>
-
- <div class="window" id="psych">
-  <div class="titlebar">
-   🧠 Psychology Lab
-   <div class="window-buttons">
-    <button onclick="minimizeApp('psych')">_</button>
-    <button onclick="maximizeApp('psych')">□</button>
-    <button onclick="closeApp('psych')">×</button>
-   </div>
-  </div>
-  <div class="window-content">
-   <h2>Psychology Lab</h2>
-   <p>Experimental department currently under construction.</p>
-   <p>Research subject: Aaratrika.</p>
-   <p>Preliminary finding: Extremely difficult to predict.</p>
-  </div>
- </div>
-
- <div class="window" id="boyfriend">
-  <div class="titlebar">
-   📊 Boyfriend.exe
-   <div class="window-buttons">
-    <button onclick="minimizeApp('boyfriend')">_</button>
-    <button onclick="maximizeApp('boyfriend')">□</button>
-    <button onclick="closeApp('boyfriend')">×</button>
-   </div>
-  </div>
-  <div class="window-content">
-   <h2>Boyfriend Performance Report</h2>
-   <p>Evaluation pending.</p>
-   <p>Examiner: Aaratrika</p>
-   <p>Subject: One extremely suspicious boyfriend.</p>
-   <button onclick="showToast('EVALUATION','Please wait. The examiner is probably laughing.')">Begin evaluation</button>
-  </div>
- </div>
-
- <div class="window" id="achievements">
-  <div class="titlebar">
-   🏆 Achievements
-   <div class="window-buttons">
-    <button onclick="minimizeApp('achievements')">_</button>
-    <button onclick="maximizeApp('achievements')">□</button>
-    <button onclick="closeApp('achievements')">×</button>
-   </div>
-  </div>
-  <div class="window-content">
-   <h2>Achievement Centre</h2>
-   <p>🏆 Being Aaratrika — Legendary</p>
-   <p>🏆 Making people laugh — Unlocked</p>
-   <p>🏆 Having excellent taste in garlic bread — Legendary</p>
-   <p>🔒 More achievements are waiting...</p>
-  </div>
- </div>
-
- <div class="window" id="recycle">
-  <div class="titlebar">
-   🗑️ Recycle Bin
-   <div class="window-buttons">
-    <button onclick="minimizeApp('recycle')">_</button>
-    <button onclick="maximizeApp('recycle')">□</button>
-    <button onclick="closeApp('recycle')">×</button>
-   </div>
-  </div>
-  <div class="window-content">
-   <h2>Recycle Bin</h2>
-   <p>Currently empty.</p>
-   <p>Except for a few questionable decisions.</p>
-  </div>
- </div>
-
- <!-- TASKBAR -->
-
- <div class="taskbar">
-  <button class="start-button" onclick="toggleStart()">⊞ START</button>
-  <div class="task-items" id="taskItems"></div>
-  <div class="clock" id="clock">00:00</div>
- </div>
-
- <div class="toast" id="toast">
-  <strong id="toastTitle">System notification</strong>
-  <div id="toastMessage">Hello!</div>
- </div>
-
+<div id="game-wrap">
+  <canvas id="game" width="960" height="540"></canvas>
 </div>
 
-<div class="shutdown" id="shutdownScreen">
- <h1>AARATRIKA OS</h1>
- <p>It is now safe to close this window.</p>
- <p>Just kidding. You cannot escape RAND.exe.</p>
- <button onclick="restart()" style="padding:12px 20px;border:1px solid #e8c4e1;background:#f2c6df;border-radius:5px;cursor:pointer">Restart system</button>
+<div id="instructions">
+  KEYBOARD: A / D or ← / → to move · SPACE / W / ↑ to jump<br>
+  MOBILE: Use the buttons below · Collect soul-orbs · Avoid ghosts
 </div>
+
+<div id="controls">
+  <div class="control-group">
+    <button class="control" id="left">◀</button>
+    <button class="control" id="right">▶</button>
+  </div>
+  <button class="control jump" id="jump">JUMP</button>
+</div>
+
+<button id="restart">↻ RESTART GAME</button>
+
+<footer>
+  HAUNTED HOLLOW · A PIXEL ADVENTURE
+</footer>
 
 <script>
-let activeWindow=null;
-let highestZ=30;
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
 
-function toggleStart(){
- document.getElementById("startMenu").classList.toggle("show");
-}
+const W = 960;
+const H = 540;
 
-function openApp(id){
- const win=document.getElementById(id);
- if(!win)return;
+const keys = {
+  left: false,
+  right: false,
+  jump: false
+};
 
- document.getElementById("startMenu").classList.remove("show");
- win.classList.add("open");
- win.style.zIndex=++highestZ;
- win.style.left="50%";
- win.style.top="50%";
+let player;
+let camera;
+let lives;
+let score;
+let collected;
+let enemies;
+let particles;
+let gameState;
+let invincible;
+let checkpoint;
+let jumpBuffer;
+let previousBottom;
+let frame = 0;
 
- if(window.innerWidth>600){
-  win.style.transform="translate(-50%,-50%)";
- }
+const worldWidth = 4300;
 
- activeWindow=id;
- updateTasks();
-}
+const platforms = [
+  {x:0, y:450, w:650, h:100},
+  {x:730, y:450, w:570, h:100},
+  {x:1380, y:450, w:660, h:100},
+  {x:2130, y:450, w:670, h:100},
+  {x:2890, y:450, w:700, h:100},
+  {x:3690, y:450, w:610, h:100},
 
-function closeApp(id){
- const win=document.getElementById(id);
- win.classList.remove("open","maximized");
- updateTasks();
-}
-
-function minimizeApp(id){
- document.getElementById(id).classList.remove("open");
- updateTasks();
-}
-
-function maximizeApp(id){
- const win=document.getElementById(id);
- win.classList.toggle("maximized");
- if(!win.classList.contains("maximized")){
-  win.style.left="50%";
-  win.style.top="50%";
-  win.style.transform="translate(-50%,-50%)";
- }
-}
-
-function updateTasks(){
- const taskItems=document.getElementById("taskItems");
- taskItems.innerHTML="";
-
- document.querySelectorAll(".window.open").forEach(win=>{
-  const btn=document.createElement("button");
-  btn.className="task-item";
-  btn.textContent=win.querySelector(".titlebar").childNodes[0].textContent.trim();
-  btn.onclick=()=>{
-   win.style.zIndex=++highestZ;
-   win.classList.add("open");
-  };
-  taskItems.appendChild(btn);
- });
-}
-
-function showToast(title,message){
- const toast=document.getElementById("toast");
- document.getElementById("toastTitle").textContent=title;
- document.getElementById("toastMessage").textContent=message;
- toast.classList.add("show");
- clearTimeout(window.toastTimer);
- window.toastTimer=setTimeout(()=>toast.classList.remove("show"),3500);
-}
-
-function shutdown(){
- document.getElementById("startMenu").classList.remove("show");
- document.getElementById("shutdownScreen").classList.add("show");
-}
-
-function restart(){
- document.getElementById("shutdownScreen").classList.remove("show");
- showToast("SYSTEM BOOT","AARATRIKA OS successfully restarted.");
-}
-
-function updateClock(){
- document.getElementById("clock").textContent=
- new Date().toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit"});
-}
-updateClock();
-setInterval(updateClock,1000);
-
-/* DRAGGABLE WINDOWS */
-
-document.querySelectorAll(".window").forEach(win=>{
- const bar=win.querySelector(".titlebar");
- let dragging=false,startX=0,startY=0,initialX=0,initialY=0;
-
- bar.addEventListener("pointerdown",e=>{
-  if(e.target.tagName==="BUTTON")return;
-  if(win.classList.contains("maximized"))return;
-
-  dragging=true;
-  bar.setPointerCapture(e.pointerId);
-  win.style.zIndex=++highestZ;
-  const rect=win.getBoundingClientRect();
-  initialX=rect.left;
-  initialY=rect.top;
-  startX=e.clientX;
-  startY=e.clientY;
- });
-
- bar.addEventListener("pointermove",e=>{
-  if(!dragging)return;
-  const dx=e.clientX-startX;
-  const dy=e.clientY-startY;
-  win.style.left=(initialX+dx)+"px";
-  win.style.top=(initialY+dy)+"px";
-  win.style.transform="none";
- });
-
- bar.addEventListener("pointerup",()=>dragging=false);
- bar.addEventListener("pointercancel",()=>dragging=false);
-});
-
-/* RANDOM NOTIFICATIONS */
-
-const notifications=[
- ["SYSTEM ALERT","Aaratrika has entered the building."],
- ["RAND.exe","Someone is thinking about you. Again."],
- ["IMPORTANT","Garlic bread remains undefeated."],
- ["SYSTEM UPDATE","Your awesomeness is still above 100%."],
- ["WARNING","Too much cuteness detected."]
+  {x:210, y:370, w:130, h:18},
+  {x:420, y:310, w:150, h:18},
+  {x:850, y:360, w:130, h:18},
+  {x:1070, y:300, w:130, h:18},
+  {x:1500, y:360, w:140, h:18},
+  {x:1740, y:300, w:150, h:18},
+  {x:2210, y:360, w:140, h:18},
+  {x:2460, y:300, w:150, h:18},
+  {x:3000, y:360, w:150, h:18},
+  {x:3250, y:300, w:140, h:18},
+  {x:3800, y:360, w:150, h:18},
+  {x:4020, y:300, w:140, h:18}
 ];
 
-setTimeout(()=>{
- const n=notifications[Math.floor(Math.random()*notifications.length)];
- showToast(n[0],n[1]);
-},5000);
+const coinPositions = [
+  [250,330],[290,330],[450,270],[500,270],
+  [900,320],[940,320],[1100,260],[1150,260],
+  [1540,320],[1580,320],[1780,260],[1830,260],
+  [2250,320],[2300,320],[2500,260],[2550,260],
+  [3040,320],[3090,320],[3290,260],[3340,260],
+  [3840,320],[3890,320],[4060,260],[4110,260],
+  [680,410],[1320,410],[2060,410],[2850,410],
+  [3650,410]
+];
 
-/* ===== RAND.exe: INDEPENDENT APPLICATION ===== */
+function makePlayer() {
+  return {
+    x: 60,
+    y: 390,
+    w: 28,
+    h: 42,
+    vx: 0,
+    vy: 0,
+    grounded: false,
+    facing: 1
+  };
+}
 
-window.RandApp = (() => {
-
-  const quotes = [
-    ["Ham apne bacche kaise palenge", "FUTURE PLANNING DEPARTMENT"],
-    ["Mera kutta tumhe kha jayega", "THREAT DETECTION SYSTEM"],
-    ["Periods pain hei toh paani peelo", "MEDICAL ADVICE.exe"],
-    ["Ek jhaapad marungi na", "ANGER MANAGEMENT DIVISION"],
-    ["12th khatam hone se pehle Mera dehant na ho jaye", "ACADEMIC SURVIVAL PROTOCOL"],
-    ["Are yawr aap na so jao", "SLEEP PREVENTION SYSTEM"],
-    ["Ro mat", "EMOTIONAL SUPPORT SERVICES"],
-    ["Ouuu shiiii", "UNIVERSAL ERROR SOUND"],
-    ["Apka naya bf banega jab toh usse mangna", "BOYFRIEND REPLACEMENT WARNING"],
-    ["Loru", "THE CLASSIC"]
+function makeEnemies() {
+  return [
+    {x:500,y:410,start:470,end:610,speed:1.3,alive:true},
+    {x:900,y:410,start:780,end:1150,speed:1.5,alive:true},
+    {x:1590,y:410,start:1450,end:1950,speed:1.7,alive:true},
+    {x:2350,y:410,start:2180,end:2700,speed:1.8,alive:true},
+    {x:3150,y:410,start:2950,end:3500,speed:2,alive:true},
+    {x:3890,y:410,start:3730,end:4200,speed:2.1,alive:true}
   ];
+}
 
-  let previous = -1;
+function resetGame() {
+  player = makePlayer();
+  camera = 0;
+  lives = 3;
+  score = 0;
+  collected = [];
+  enemies = makeEnemies();
+  particles = [];
+  gameState = "playing";
+  invincible = 0;
+  checkpoint = 60;
+  jumpBuffer = 0;
+}
 
-  function randomQuote() {
-    let index = Math.floor(Math.random() * quotes.length);
+function hurtPlayer() {
+  if (invincible > 0 || gameState !== "playing") return;
 
-    while (index === previous && quotes.length > 1) {
-      index = Math.floor(Math.random() * quotes.length);
+  lives--;
+
+  if (lives <= 0) {
+    gameState = "gameover";
+    return;
+  }
+
+  player.x = checkpoint;
+  player.y = 360;
+  player.vx = 0;
+  player.vy = 0;
+  invincible = 110;
+}
+
+function overlap(a,b) {
+  return a.x < b.x + b.w &&
+         a.x + a.w > b.x &&
+         a.y < b.y + b.h &&
+         a.y + a.h > b.y;
+}
+
+function drawBackground() {
+  const sky = ctx.createLinearGradient(0,0,0,H);
+  sky.addColorStop(0,"#17142e");
+  sky.addColorStop(1,"#37304a");
+
+  ctx.fillStyle = sky;
+  ctx.fillRect(0,0,W,H);
+
+  // Moon
+  ctx.fillStyle = "#d9d1f0";
+  ctx.beginPath();
+  ctx.arc(790,100,48,0,Math.PI*2);
+  ctx.fill();
+
+  ctx.fillStyle = "#17142e";
+  ctx.beginPath();
+  ctx.arc(810,82,43,0,Math.PI*2);
+  ctx.fill();
+
+  // Stars
+  for (let i=0;i<55;i++) {
+    let x = (i*173 - camera*0.15) % W;
+    if(x<0) x+=W;
+    let y = (i*67)%220;
+    ctx.fillStyle = i%3===0 ? "#d9c9ff" : "#827ba5";
+    ctx.fillRect(x,y,3,3);
+  }
+
+  // Distant hills
+  ctx.fillStyle = "#27243c";
+  for(let i=0;i<8;i++){
+    let x = i*180 - (camera*0.25)%180;
+    ctx.beginPath();
+    ctx.arc(x,410,120,Math.PI,0);
+    ctx.fill();
+  }
+
+  // Haunted trees
+  for(let i=0;i<16;i++){
+    let x = i*150 - (camera*0.45)%150;
+    drawTree(x, 415, 0.8+(i%3)*0.15);
+  }
+}
+
+function drawTree(x,y,s) {
+  ctx.save();
+  ctx.translate(x,y);
+  ctx.scale(s,s);
+
+  ctx.fillStyle="#211b30";
+  ctx.fillRect(-9,-105,18,110);
+
+  ctx.fillRect(-9,-80,-38,9);
+  ctx.fillRect(0,-65,42,9);
+  ctx.fillRect(-35,-95,8,30);
+  ctx.fillRect(30,-88,8,32);
+
+  ctx.fillStyle="#362847";
+  ctx.fillRect(-42,-108,18,18);
+  ctx.fillRect(25,-112,20,20);
+  ctx.fillRect(-10,-130,20,25);
+
+  ctx.restore();
+}
+
+function drawPlatforms() {
+  for(const p of platforms) {
+    const x = Math.floor(p.x-camera);
+    if(x+p.w<0 || x>W) continue;
+
+    ctx.fillStyle = "#352b40";
+    ctx.fillRect(x,p.y,p.w,p.h);
+
+    ctx.fillStyle = "#58714c";
+    ctx.fillRect(x,p.y,p.w,9);
+
+    ctx.fillStyle = "#8da66a";
+    for(let i=0;i<p.w;i+=26) {
+      ctx.fillRect(x+i,p.y-3,10,4);
     }
 
-    previous = index;
-    return quotes[index];
+    ctx.fillStyle="#292035";
+    for(let i=10;i<p.w;i+=38) {
+      ctx.fillRect(x+i,p.y+22,15,5);
+    }
+  }
+}
+
+function drawCoin(x,y) {
+  ctx.fillStyle="#a5f7ff";
+  ctx.fillRect(x-5,y-10,10,20);
+  ctx.fillStyle="#e4ffff";
+  ctx.fillRect(x-2,y-7,4,14);
+  ctx.fillStyle="#7a9aff";
+  ctx.fillRect(x-8,y-4,3,8);
+  ctx.fillRect(x+5,y-4,3,8);
+}
+
+function drawPlayer() {
+  if(invincible>0 && Math.floor(frame/5)%2===0) return;
+
+  const x=Math.floor(player.x-camera);
+  const y=Math.floor(player.y);
+
+  ctx.save();
+
+  if(player.facing<0){
+    ctx.translate(x+player.w,y);
+    ctx.scale(-1,1);
+    ctx.translate(-x,-y);
   }
 
-  function tab(name, button) {
-    ["quotes", "translator", "daily"].forEach(id => {
-      const panel = document.getElementById("rand-" + id);
-      panel.hidden = id !== name;
-    });
+  // Shadow
+  ctx.fillStyle="#171323";
+  ctx.fillRect(x+3,y+39,25,5);
 
-    document.querySelectorAll(".rand-tabs button").forEach(btn => {
-      btn.classList.remove("active");
-    });
+  // Boots
+  ctx.fillStyle="#35243d";
+  ctx.fillRect(x+3,y+34,10,8);
+  ctx.fillRect(x+17,y+34,10,8);
 
-    button.classList.add("active");
+  // Body
+  ctx.fillStyle="#5c466e";
+  ctx.fillRect(x+5,y+16,19,20);
+
+  // Coat
+  ctx.fillStyle="#a18ac1";
+  ctx.fillRect(x+8,y+18,13,17);
+
+  // Scarf
+  ctx.fillStyle="#b94e70";
+  ctx.fillRect(x+5,y+17,21,5);
+  ctx.fillRect(x+19,y+20,5,9);
+
+  // Head
+  ctx.fillStyle="#f0c6a8";
+  ctx.fillRect(x+5,y+3,20,17);
+
+  // Hair
+  ctx.fillStyle="#32253d";
+  ctx.fillRect(x+3,y,22,8);
+  ctx.fillRect(x+3,y+5,5,9);
+
+  // Eye
+  ctx.fillStyle="#211a30";
+  ctx.fillRect(x+19,y+10,3,3);
+
+  ctx.restore();
+}
+
+function drawGhost(e) {
+  if(!e.alive) return;
+
+  const x=Math.floor(e.x-camera);
+  const y=Math.floor(e.y);
+
+  ctx.fillStyle="#b5c8e9";
+  ctx.fillRect(x+5,y+5,24,22);
+  ctx.fillRect(x,y+12,34,13);
+  ctx.fillRect(x+3,y+26,7,6);
+  ctx.fillRect(x+14,y+26,7,6);
+  ctx.fillRect(x+25,y+26,7,6);
+
+  ctx.fillStyle="#596080";
+  ctx.fillRect(x+9,y+12,5,7);
+  ctx.fillRect(x+22,y+12,5,7);
+
+  ctx.fillStyle="#fff";
+  ctx.fillRect(x+10,y+13,2,3);
+  ctx.fillRect(x+23,y+13,2,3);
+}
+
+function drawHUD() {
+  ctx.fillStyle="rgba(12,9,24,0.8)";
+  ctx.fillRect(15,15,300,54);
+
+  ctx.fillStyle="#eee3ff";
+  ctx.font="bold 19px monospace";
+  ctx.fillText("LIVES: "+ "♥ ".repeat(lives),28,39);
+
+  ctx.fillStyle="#a8f4ff";
+  ctx.font="16px monospace";
+  ctx.fillText("SOULS: "+score,28,59);
+
+  ctx.fillStyle="#c7b2e7";
+  ctx.font="13px monospace";
+  ctx.fillText("WORLD 1 - THE FORGOTTEN WOODS",620,35);
+}
+
+function drawOverlay(title,subtitle) {
+  ctx.fillStyle="rgba(8,5,18,0.82)";
+  ctx.fillRect(0,0,W,H);
+
+  ctx.textAlign="center";
+  ctx.fillStyle="#d4b4ff";
+  ctx.font="bold 44px monospace";
+  ctx.fillText(title,W/2,220);
+
+  ctx.fillStyle="#eee3ff";
+  ctx.font="18px monospace";
+  ctx.fillText(subtitle,W/2,270);
+
+  ctx.font="14px monospace";
+  ctx.fillStyle="#b9a8d0";
+  ctx.fillText("Press ENTER or tap RESTART",W/2,320);
+
+  ctx.textAlign="left";
+}
+
+function update() {
+  if(gameState!=="playing") return;
+
+  frame++;
+
+  if(invincible>0) invincible--;
+  if(jumpBuffer>0) jumpBuffer--;
+
+  const speed=4.2;
+  const gravity=0.58;
+  const jumpPower=-12.5;
+
+  player.vx=0;
+
+  if(keys.left) {
+    player.vx=-speed;
+    player.facing=-1;
+  }
+  if(keys.right) {
+    player.vx=speed;
+    player.facing=1;
   }
 
-  function generate() {
-    const quote = randomQuote();
-
-    document.getElementById("rand-quote-text").textContent =
-      '"' + quote[0] + '"';
-
-    document.getElementById("rand-quote-label").textContent =
-      quote[1];
-
-    status("QUOTE GENERATED. EMOTIONAL DAMAGE DETECTED.");
+  if(keys.jump) {
+    jumpBuffer=9;
   }
 
-  function daily() {
-    const quote = randomQuote();
-
-    document.getElementById("rand-daily-text").textContent =
-      '"' + quote[0] + '"';
-
-    status("DAILY RAND DELIVERED. PROCEED WITH CAUTION.");
+  if(jumpBuffer>0 && player.grounded) {
+    player.vy=jumpPower;
+    player.grounded=false;
+    jumpBuffer=0;
   }
 
-  function translate() {
-    const input = document.getElementById("rand-input")
-      .value.trim().toLowerCase();
+  player.x+=player.vx;
+  player.x=Math.max(0,Math.min(worldWidth-player.w,player.x));
 
-    const output = document.getElementById("rand-translation");
+  previousBottom=player.y+player.h;
 
-    if (!input) {
-      output.textContent = "ERROR: ENTER A SENTENCE FIRST.";
-      return;
+  player.vy+=gravity;
+  player.vy=Math.min(player.vy,13);
+  player.y+=player.vy;
+
+  player.grounded=false;
+
+  // Platform collision
+  for(const p of platforms) {
+    if(
+      player.x+player.w>p.x &&
+      player.x<p.x+p.w &&
+      previousBottom<=p.y &&
+      player.y+player.h>=p.y &&
+      player.vy>=0
+    ) {
+      player.y=p.y-player.h;
+      player.vy=0;
+      player.grounded=true;
+    }
+  }
+
+  // Checkpoint
+  if(player.x>2150 && checkpoint<2150) {
+    checkpoint=2180;
+  }
+
+  // Collect souls
+  for(let i=0;i<coinPositions.length;i++) {
+    if(collected.includes(i)) continue;
+
+    const [cx,cy]=coinPositions[i];
+    if(overlap(player,{x:cx-10,y:cy-12,w:20,h:24})) {
+      collected.push(i);
+      score++;
+    }
+  }
+
+  // Enemies
+  for(const e of enemies) {
+    if(!e.alive) continue;
+
+    e.x+=e.speed;
+    if(e.x<e.start || e.x+34>e.end) {
+      e.speed*=-1;
     }
 
-    let result;
-
-    if (input.includes("sleep") || input.includes("tired")) {
-      result = quotes[5][0];
-    } else if (input.includes("cry") || input.includes("sad")) {
-      result = quotes[6][0];
-    } else if (input.includes("future") || input.includes("children")) {
-      result = quotes[0][0];
-    } else if (input.includes("dog")) {
-      result = quotes[1][0];
-    } else if (input.includes("pain") || input.includes("hurt")) {
-      result = quotes[2][0];
-    } else if (input.includes("boyfriend") || input.includes("ex")) {
-      result = quotes[8][0];
-    } else if (input.includes("angry") || input.includes("annoy")) {
-      result = quotes[3][0];
-    } else {
-      result = randomQuote()[0];
+    if(overlap(player,{x:e.x,y:e.y,w:34,h:32})) {
+      if(player.vy>0 && previousBottom<=e.y+13) {
+        e.alive=false;
+        player.vy=-9;
+        score+=3;
+      } else {
+        hurtPlayer();
+      }
     }
-
-    output.textContent = "TRANSLATION: " + result;
-    status("TRANSLATION COMPLETE. ACCURACY QUESTIONABLE.");
   }
 
-  function status(message) {
-    document.getElementById("rand-status").textContent =
-      "SYSTEM STATUS: " + message;
+  if(player.y>620) {
+    hurtPlayer();
   }
 
-  return { tab, generate, daily, translate };
+  if(player.x>4210) {
+    gameState="won";
+  }
 
-})();
+  camera=player.x-W*0.36;
+  camera=Math.max(0,Math.min(worldWidth-W,camera));
+}
 
-console.log("RAND.exe loaded successfully.");
- 
+function render() {
+  drawBackground();
+  drawPlatforms();
+
+  for(let i=0;i<coinPositions.length;i++) {
+    if(!collected.includes(i)) {
+      const [x,y]=coinPositions[i];
+      drawCoin(x-camera,y);
+    }
+  }
+
+  for(const e of enemies) drawGhost(e);
+
+  drawPlayer();
+  drawHUD();
+
+  if(gameState==="gameover") {
+    drawOverlay("GAME OVER","The forest has claimed you...");
+  }
+
+  if(gameState==="won") {
+    drawOverlay("YOU ESCAPED!","The Forgotten Woods are behind you.");
+  }
+}
+
+function loop() {
+  update();
+  render();
+  requestAnimationFrame(loop);
+}
+
+// Keyboard controls
+document.addEventListener("keydown",e=>{
+  if(["ArrowLeft","ArrowRight","ArrowUp"," "].includes(e.key)) {
+    e.preventDefault();
+  }
+
+  if(e.key==="ArrowLeft" || e.key.toLowerCase()==="a") keys.left=true;
+  if(e.key==="ArrowRight" || e.key.toLowerCase()==="d") keys.right=true;
+  if(e.key===" " || e.key==="ArrowUp" || e.key.toLowerCase()==="w") {
+    if(!keys.jump) jumpBuffer=9;
+    keys.jump=true;
+  }
+
+  if(e.key==="Enter" && gameState!=="playing") resetGame();
+});
+
+document.addEventListener("keyup",e=>{
+  if(e.key==="ArrowLeft" || e.key.toLowerCase()==="a") keys.left=false;
+  if(e.key==="ArrowRight" || e.key.toLowerCase()==="d") keys.right=false;
+  if(e.key===" " || e.key==="ArrowUp" || e.key.toLowerCase()==="w") keys.jump=false;
+});
+
+// Mobile buttons
+function bindButton(id,key) {
+  const button=document.getElementById(id);
+
+  button.addEventListener("pointerdown",e=>{
+    e.preventDefault();
+    keys[key]=true;
+    button.classList.add("pressed");
+    button.setPointerCapture(e.pointerId);
+  });
+
+  function release(e) {
+    e.preventDefault();
+    keys[key]=false;
+    button.classList.remove("pressed");
+  }
+
+  button.addEventListener("pointerup",release);
+  button.addEventListener("pointercancel",release);
+  button.addEventListener("lostpointercapture",()=>{
+    keys[key]=false;
+    button.classList.remove("pressed");
+  });
+}
+
+bindButton("left","left");
+bindButton("right","right");
+bindButton("jump","jump");
+
+document.getElementById("restart").addEventListener("click",resetGame);
+
+resetGame();
+loop();
 </script>
+
 </body>
-                                                     </html>
-                                                     
+</html>
