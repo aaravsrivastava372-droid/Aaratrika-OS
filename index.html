@@ -883,7 +883,8 @@ setTimeout(()=>{
  const n=notifications[Math.floor(Math.random()*notifications.length)];
  showToast(n[0],n[1]);
 },5000);
- console.log("RAND SYSTEM LOADED");
+/* ===== AARATRIKA OS: RAND.exe ===== */
+
 window.aaratrikaQuotes = [
   ["Ham apne bacche kaise palenge", "FUTURE PLANNING DEPARTMENT"],
   ["Mera kutta tumhe kha jayega", "THREAT DETECTION SYSTEM"],
@@ -900,23 +901,30 @@ window.aaratrikaQuotes = [
 window.lastRandQuote = -1;
 
 window.randTab = function(tab, button) {
-  document.querySelectorAll('.rand-tabs button')
-    .forEach(b => b.classList.remove('active'));
+  const names = ["quotes", "translator", "daily"];
 
-  button.classList.add('active');
-
-  ['quotes', 'translator', 'daily'].forEach(name => {
-    document.getElementById('rand-' + name).style.display =
-      name === tab ? 'block' : 'none';
+  names.forEach(name => {
+    const panel = document.getElementById("rand-" + name);
+    if (panel) {
+      panel.style.display = name === tab ? "block" : "none";
+    }
   });
+
+  document.querySelectorAll(".rand-tabs button").forEach(btn => {
+    btn.classList.remove("active");
+  });
+
+  if (button) button.classList.add("active");
 };
 
 window.getRandomQuote = function() {
-  let index;
+  let index = Math.floor(Math.random() * window.aaratrikaQuotes.length);
 
-  do {
-    index = Math.floor(Math.random() * window.aaratrikaQuotes.length);
-  } while (index === window.lastRandQuote);
+  if (window.aaratrikaQuotes.length > 1) {
+    while (index === window.lastRandQuote) {
+      index = Math.floor(Math.random() * window.aaratrikaQuotes.length);
+    }
+  }
 
   window.lastRandQuote = index;
   return window.aaratrikaQuotes[index];
@@ -925,63 +933,64 @@ window.getRandomQuote = function() {
 window.generateRandQuote = function() {
   const quote = window.getRandomQuote();
 
-  document.getElementById('rand-quote-text').textContent =
+  document.getElementById("rand-quote-text").textContent =
     '"' + quote[0] + '"';
 
-  document.getElementById('rand-quote-label').textContent =
+  document.getElementById("rand-quote-label").textContent =
     quote[1];
 
-  document.getElementById('rand-status').textContent =
-    'QUOTE GENERATED. EMOTIONAL DAMAGE DETECTED.';
+  document.getElementById("rand-status").textContent =
+    "QUOTE GENERATED. EMOTIONAL DAMAGE DETECTED.";
 };
 
 window.generateDailyRand = function() {
   const quote = window.getRandomQuote();
 
-  document.getElementById('rand-daily-text').textContent =
+  document.getElementById("rand-daily-text").textContent =
     '"' + quote[0] + '"';
 
-  document.getElementById('rand-status').textContent =
-    'DAILY RAND DELIVERED. PROCEED WITH CAUTION.';
+  document.getElementById("rand-status").textContent =
+    "DAILY RAND DELIVERED. PROCEED WITH CAUTION.";
 };
 
 window.translateRand = function() {
-  const input = document.getElementById('rand-input')
-    .value.trim().toLowerCase();
+  const input = document.getElementById("rand-input").value
+    .trim().toLowerCase();
 
-  const output = document.getElementById('rand-translation');
+  const output = document.getElementById("rand-translation");
 
   if (!input) {
-    output.textContent = 'ERROR: ENTER A SENTENCE FIRST.';
+    output.textContent = "ERROR: ENTER A SENTENCE FIRST.";
     return;
   }
 
   let result;
 
-  if (input.includes('sleep') || input.includes('tired')) {
-    result = 'Are yawr aap na so jao';
-  } else if (input.includes('cry') || input.includes('sad')) {
-    result = 'Ro mat';
-  } else if (input.includes('future') || input.includes('children')) {
-    result = 'Ham apne bacche kaise palenge';
-  } else if (input.includes('dog')) {
-    result = 'Mera kutta tumhe kha jayega';
-  } else if (input.includes('pain') || input.includes('hurt')) {
-    result = 'Periods pain hei toh paani peelo';
-  } else if (input.includes('boyfriend') || input.includes('ex')) {
-    result = 'Apka naya bf banega jab toh usse mangna';
-  } else if (input.includes('angry') || input.includes('annoy')) {
-    result = 'Ek jhaapad marungi na';
+  if (input.includes("sleep") || input.includes("tired")) {
+    result = "Are yawr aap na so jao";
+  } else if (input.includes("cry") || input.includes("sad")) {
+    result = "Ro mat";
+  } else if (input.includes("future") || input.includes("children")) {
+    result = "Ham apne bacche kaise palenge";
+  } else if (input.includes("dog")) {
+    result = "Mera kutta tumhe kha jayega";
+  } else if (input.includes("pain") || input.includes("hurt")) {
+    result = "Periods pain hei toh paani peelo";
+  } else if (input.includes("boyfriend") || input.includes("ex")) {
+    result = "Apka naya bf banega jab toh usse mangna";
+  } else if (input.includes("angry") || input.includes("annoy")) {
+    result = "Ek jhaapad marungi na";
   } else {
     result = window.getRandomQuote()[0];
   }
 
-  output.textContent = 'TRANSLATION: ' + result;
+  output.textContent = "TRANSLATION: " + result;
 
-  document.getElementById('rand-status').textContent =
-    'TRANSLATION COMPLETE. ACCURACY QUESTIONABLE.';
+  document.getElementById("rand-status").textContent =
+    "TRANSLATION COMPLETE. ACCURACY QUESTIONABLE.";
 };
- 
+
+console.log("RAND.exe successfully loaded!");
 </script>
 </body>
                                                      </html>
